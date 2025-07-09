@@ -155,3 +155,9 @@ Compare two times.
 - `-1` if `time_a` is before `time_b`.
 - `0` if `time_a` is equal to `time_b`.
 - `1` if `time_a` is after `time_b`.
+
+## Credits
+
+- https://github.com/araddon/dateparse
+- https://github.com/tj/go-naturaldate
+- https://github.com/mark3labs/mcp-go
