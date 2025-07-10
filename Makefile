@@ -4,9 +4,13 @@
 PROJECT_NAME := mcp-time
 ROOT_DIR := $(shell pwd)
 BUILD_DIR := build
+DOCKER_FILE := docker/Dockerfile
 
 # Build informations
 VERSION := $(shell git describe --always --long --dirty || date)
+GOARCH ?= $(shell go env GOARCH)
+GOOS ?= $(shell go env GOOS)
+BUILD_USER ?= $(shell whoami)@$(shell hostname)
 
 # Default target
 .DEFAULT_GOAL := build
@@ -20,35 +24,71 @@ RESET := \033[0m
 
 ##@ Building
 
-.PHONY: build
-build: ## Build the Go binary using Docker
+define build
 	@printf "$(CYAN)Building Go binary...$(RESET)\n"
 	mkdir -p $(BUILD_DIR)
-	go build -v -o ./$(BUILD_DIR)/$(PROJECT_NAME) -ldflags=" \
+	GOOS=$(1) GOARCH=$(2) go build -v -o ./$(BUILD_DIR)/$(PROJECT_NAME).$(1)-$(2) -ldflags=" \
 	-s -w \
 	-X main.Name=$(PROJECT_NAME) \
 	-X github.com/prometheus/common/version.Version=$(VERSION) \
 	-X github.com/prometheus/common/version.Revision=$(shell git rev-parse HEAD) \
 	-X github.com/prometheus/common/version.Branch=$(shell git rev-parse --abbrev-ref HEAD) \
-	-X github.com/prometheus/common/version.BuildUser=$(shell whoami)@$(shell hostname) \
+	-X github.com/prometheus/common/version.BuildUser=$(BUILD_USER) \
 	-X github.com/prometheus/common/version.BuildDate=$(shell date --utc +%FT%T)" \
 	./cmd/$(PROJECT_NAME)
+	@printf "$(GREEN)Build completed. Output is in $(BUILD_DIR)/$(PROJECT_NAME).$(1)-$(2)$(RESET)\n"
+endef
 
-	@printf "$(GREEN)Build completed. Output is in $(BUILD_DIR)/$(PROJECT_NAME)$(RESET)\n"
+.PHONY: build
+build: ## Build the Go binary
+	$(call build,$(GOOS),$(GOARCH))
 
-.PHONY: clean
-clean: ## Clean build artifacts and Docker images
-	@printf "$(CYAN)Cleaning build artifacts...$(RESET)\n"
-	rm -rf $(BUILD_DIR)
-	@printf "$(GREEN)Cleanup completed$(RESET)\n"
+.PHONY: build-linux-amd64
+build-linux-amd64: ## Build the Go binary for AMD64 architecture on linux
+	$(call build,linux,amd64)
+
+.PHONY: build-linux-arm64
+build-linux-arm64: ## Build the Go binary for ARM64 architecture on linux
+	$(call build,linux,arm64)
+
+.PHONY: build-darwin-amd64
+build-darwin-amd64: ## Build the Go binary for AMD64 architecture on darwin
+	$(call build,darwin,amd64)
+
+.PHONY: build-darwin-arm64
+build-darwin-arm64: ## Build the Go binary for ARM64 architecture on darwin
+	$(call build,darwin,arm64)
+
+.PHONY: build-all
+build-all: build-linux-amd64 build-linux-arm64 build-darwin-amd64 build-darwin-arm64 # Build all supported architectures
 
 .PHONY: install
 install: build ## Install the binary to ~/.local/bin
 	@printf "$(CYAN)Installing binary to ~/.local/bin...$(RESET)\n"
 	@mkdir -p ~/.local/bin
-	cp $(BUILD_DIR)/$(PROJECT_NAME) ~/.local/bin/$(PROJECT_NAME)
+	cp $(BUILD_DIR)/$(PROJECT_NAME).$(GOARCH) ~/.local/bin/$(PROJECT_NAME)
 	chmod +x ~/.local/bin/$(PROJECT_NAME)
 	@printf "$(GREEN)Binary installed to ~/.local/bin/$(PROJECT_NAME)$(RESET)\n"
+
+.PHONY: docker
+docker: build ## Build the Docker image
+	@printf "$(CYAN)Building Docker image...$(RESET)\n"
+	docker build -f $(DOCKER_FILE) -t $(PROJECT_NAME) .
+	@printf "$(GREEN)Docker image built successfully$(RESET)\n"
+
+.PHONY: docker
+docker-all: build-all ## Build the Docker image for all architectures
+	@printf "$(CYAN)Building Docker image...$(RESET)\n"
+	docker buildx build --platform linux/amd64,linux/arm64,darwin/amd64,darwin/arm64 -f $(DOCKER_FILE) -t $(PROJECT_NAME) .
+	@printf "$(GREEN)Docker image built successfully$(RESET)\n"
+
+.PHONY: clean
+clean: ## Clean build artifacts and Docker images
+	@printf "$(CYAN)Cleaning build artifacts...$(RESET)\n"
+	rm -rf $(BUILD_DIR)
+	@printf "$(CYAN)Removing Docker images...$(RESET)\n"
+	@docker rmi -f $(PROJECT_NAME) 2>/dev/null || true
+	@printf "$(GREEN)Cleanup completed$(RESET)\n"
 
 ##@ Testing
 
