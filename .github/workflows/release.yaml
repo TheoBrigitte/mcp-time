@@ -24,6 +24,7 @@ jobs:
         push: true
         tags: theo01/mcp-time:latest,theo01/mcp-time:${{ github.ref_name }}
         file: docker/Dockerfile
+        context: .
         platforms:
           - linux/amd64
           - linux/arm64
