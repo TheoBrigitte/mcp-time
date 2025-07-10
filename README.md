@@ -36,7 +36,7 @@ The Time MCP Server is a [Model Context Protocol (MCP)](https://github.com/model
 ### Using Docker
 
 ```bash
-docker run mcp-time
+docker pull theo01/mcp-time:latest
 ```
 
 ### Using Go Install
