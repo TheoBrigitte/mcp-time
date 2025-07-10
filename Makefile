@@ -66,7 +66,7 @@ build-all: build-linux-amd64 build-linux-arm64 build-darwin-amd64 build-darwin-a
 install: build ## Install the binary to ~/.local/bin
 	@printf "$(CYAN)Installing binary to ~/.local/bin...$(RESET)\n"
 	@mkdir -p ~/.local/bin
-	cp $(BUILD_DIR)/$(PROJECT_NAME).$(GOARCH) ~/.local/bin/$(PROJECT_NAME)
+	cp $(BUILD_DIR)/$(PROJECT_NAME).$(GOOS)-$(GOARCH) ~/.local/bin/$(PROJECT_NAME)
 	chmod +x ~/.local/bin/$(PROJECT_NAME)
 	@printf "$(GREEN)Binary installed to ~/.local/bin/$(PROJECT_NAME)$(RESET)\n"
 
@@ -79,7 +79,7 @@ docker: build ## Build the Docker image
 .PHONY: docker
 docker-all: build-all ## Build the Docker image for all architectures
 	@printf "$(CYAN)Building Docker image...$(RESET)\n"
-	docker buildx build --platform linux/amd64,linux/arm64,darwin/amd64,darwin/arm64 -f $(DOCKER_FILE) -t $(PROJECT_NAME) .
+	docker buildx build --platform linux/amd64,linux/arm64 -f $(DOCKER_FILE) -t $(PROJECT_NAME) .
 	@printf "$(GREEN)Docker image built successfully$(RESET)\n"
 
 .PHONY: clean
