@@ -22,7 +22,7 @@ jobs:
     - uses: docker/build-push-action@v6
       with:
         push: true
-        tags: theo01/mcp-time:latest,theo01/mcp-time:${{ github.ref }}
+        tags: theo01/mcp-time:latest,theo01/mcp-time:${{ github.ref_name }}
         file: docker/Dockerfile
         platforms:
           - linux/amd64

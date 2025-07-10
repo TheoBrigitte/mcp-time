@@ -24,26 +24,26 @@ jobs:
     - uses: docker/build-push-action@v6
       with:
         push: true
-        tags: theo01/mcp-time:${{ github.ref }}
+        tags: theo01/mcp-time:${{ github.ref_name }}
         file: docker/Dockerfile
         platforms: linux/amd64,linux/arm64,darwin/amd64,darwin/arm64
   test-linux-amd64:
     needs: build
     runs-on: ubuntu-24.04
     steps:
-      - run: docker run --rm theo01/mcp-time:${{ github.ref }} --version
+      - run: docker run --rm theo01/mcp-time:${{ github.ref_name }} --version
   test-linux-arm64:
     needs: build
     runs-on: ubuntu-24.04-arm
     steps:
-      - run: docker run --rm theo01/mcp-time:${{ github.ref }} --version
+      - run: docker run --rm theo01/mcp-time:${{ github.ref_name }} --version
   test-macos-amd64:
     needs: build
     runs-on: macos-13
     steps:
-      - run: docker run --rm theo01/mcp-time:${{ github.ref }} --version
+      - run: docker run --rm theo01/mcp-time:${{ github.ref_name }} --version
   test-macos-arm64:
     needs: build
     runs-on: macos-15
     steps:
-      - run: docker run --rm theo01/mcp-time:${{ github.ref }} --version
+      - run: docker run --rm theo01/mcp-time:${{ github.ref_name }} --version
