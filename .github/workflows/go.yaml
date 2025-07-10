@@ -17,13 +17,13 @@ jobs:
     - run: make test
     - run: make build-all
     - name: Docker meta
-        id: meta
-        uses: docker/metadata-action@v5
-        with:
-          images: |
-            theo01/mcp-time
-          tags: |
-            type=ref,event=branch
+      id: meta
+      uses: docker/metadata-action@v5
+      with:
+        images: |
+          theo01/mcp-time
+        tags: |
+          type=ref,event=branch
     - uses: docker/login-action@v3
       with:
         username: ${{ vars.DOCKERHUB_USERNAME }}
