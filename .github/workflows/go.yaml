@@ -26,11 +26,7 @@ jobs:
         push: true
         tags: theo01/mcp-time:${{ github.ref }}
         file: docker/Dockerfile
-        platforms:
-          - linux/amd64
-          - linux/arm64
-          - darwin/amd64
-          - darwin/arm64
+        platforms: linux/amd64,linux/arm64,darwin/amd64,darwin/arm64
   test-linux-amd64:
     needs: build
     runs-on: ubuntu-24.04
