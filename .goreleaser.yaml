@@ -6,9 +6,6 @@ before:
 
 builds:
   - builder: prebuilt
-    env:
-      - CGO_ENABLED=1
-      - BUILD_USER=goreleaser
     goos:
       - linux
       - darwin

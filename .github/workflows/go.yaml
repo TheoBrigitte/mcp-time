@@ -1,6 +1,6 @@
 name: go
 
-on: [pull_request, push]
+on: push
 
 jobs:
   build:
@@ -16,6 +16,8 @@ jobs:
     - uses: sonatype-nexus-community/nancy-github-action@main
     - run: make test
     - run: make build-all
+      env:
+        BUILD_USER: github-action
     - name: Docker meta
       id: meta
       uses: docker/metadata-action@v5
@@ -23,7 +25,7 @@ jobs:
         images: |
           theo01/mcp-time
         tags: |
-          type=ref,event=push
+          type=ref,event=branch
     - uses: docker/login-action@v3
       with:
         username: ${{ vars.DOCKERHUB_USERNAME }}
@@ -50,9 +52,11 @@ jobs:
     needs: build
     runs-on: macos-13
     steps:
+      - uses: docker/setup-docker-action@v4
       - run: docker run --rm theo01/mcp-time:${{ github.ref_name }} --version
   test-macos-arm64:
     needs: build
     runs-on: macos-15
     steps:
+      - uses: docker/setup-docker-action@v4
       - run: docker run --rm theo01/mcp-time:${{ github.ref_name }} --version

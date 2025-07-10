@@ -14,6 +14,8 @@ jobs:
       with:
         go-version: stable
     - run: make build-all
+      env:
+        BUILD_USER: github-action
     - name: Docker meta
       id: meta
       uses: docker/metadata-action@v5
@@ -49,4 +51,3 @@ jobs:
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         BUILD_BRANCH: ${{ vars.BUILD_BRANCH }}
-        BUILD_USER: ${{ vars.BUILD_USER }}
