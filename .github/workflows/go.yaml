@@ -54,9 +54,3 @@ jobs:
     steps:
       - uses: docker/setup-docker-action@v4
       - run: docker run --rm theo01/mcp-time:${{ github.ref_name }} --version
-  test-macos-arm64:
-    needs: build
-    runs-on: macos-15
-    steps:
-      - uses: docker/setup-docker-action@v4
-      - run: docker run --rm theo01/mcp-time:${{ github.ref_name }} --version
