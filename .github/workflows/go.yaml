@@ -52,5 +52,8 @@ jobs:
     needs: build
     runs-on: macos-13
     steps:
-      - uses: docker/setup-docker-action@v4
+      - name: Install docker
+        run: |
+          brew install colima docker && \
+            colima start
       - run: docker run --rm theo01/mcp-time:${{ github.ref_name }} --version
