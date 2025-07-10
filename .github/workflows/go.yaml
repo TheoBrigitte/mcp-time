@@ -37,7 +37,7 @@ jobs:
         tags: ${{ steps.meta.outputs.tags }}
         context: .
         file: docker/Dockerfile
-        platforms: linux/amd64,linux/arm64,darwin/amd64,darwin/arm64
+        platforms: linux/amd64,linux/arm64
   test-linux-amd64:
     needs: build
     runs-on: ubuntu-24.04
@@ -48,12 +48,4 @@ jobs:
     runs-on: ubuntu-24.04-arm
     steps:
       - run: docker run --rm theo01/mcp-time:${{ github.ref_name }} --version
-  test-macos-amd64:
-    needs: build
-    runs-on: macos-13
-    steps:
-      - name: Install docker
-        run: |
-          brew install colima docker && \
-            colima start
-      - run: docker run --rm theo01/mcp-time:${{ github.ref_name }} --version
+  
