@@ -27,7 +27,7 @@ RESET := \033[0m
 define build
 	@printf "$(CYAN)Building Go binary...$(RESET)\n"
 	mkdir -p $(BUILD_DIR)
-	GOOS=$(1) GOARCH=$(2) go build -v -o ./$(BUILD_DIR)/$(PROJECT_NAME).$(1)-$(2) -ldflags=" \
+	GOOS=$(1) GOARCH=$(2) CGO_ENABLED=0 go build -v -o ./$(BUILD_DIR)/$(PROJECT_NAME).$(1)-$(2) -ldflags=" \
 	-s -w \
 	-X main.Name=$(PROJECT_NAME) \
 	-X github.com/prometheus/common/version.Version=$(VERSION) \

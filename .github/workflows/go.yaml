@@ -4,7 +4,7 @@ on: [pull_request, push]
 
 jobs:
   build:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     steps:
     - uses: actions/checkout@v4
     - uses: actions/setup-go@v5
@@ -31,3 +31,23 @@ jobs:
           - linux/arm64
           - darwin/amd64
           - darwin/arm64
+  test-linux-amd64:
+    needs: build
+    runs-on: ubuntu-24.04
+    steps:
+      - run: docker run --rm theo01/mcp-time:${{ github.ref }} --version
+  test-linux-arm64:
+    needs: build
+    runs-on: ubuntu-24.04-arm
+    steps:
+      - run: docker run --rm theo01/mcp-time:${{ github.ref }} --version
+  test-macos-amd64:
+    needs: build
+    runs-on: macos-13
+    steps:
+      - run: docker run --rm theo01/mcp-time:${{ github.ref }} --version
+  test-macos-arm64:
+    needs: build
+    runs-on: macos-15
+    steps:
+      - run: docker run --rm theo01/mcp-time:${{ github.ref }} --version
