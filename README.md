@@ -27,13 +27,53 @@ The Time MCP Server is a [Model Context Protocol (MCP)](https://github.com/model
 - **MCP Compliance**: Fully compatible with the Model Context Protocol standard.
 - **Multiple Transports**: Can be run using `stdio` for simple integrations or as an `HTTP stream` server for network access.
 
-## Prerequisites
-
-- Go 1.24.2 or later
-
 ## Installation
 
-### Building from Source
+This MCP server can be integrated with various AI assistants that support the Model Context Protocol.
+
+### Using Docker
+
+```json
+{
+  "mcpServers": {
+    "time": {
+      "command": "docker",
+      "args": [
+        "run",
+        "--rm",
+        "-i",
+        "theo01/mcp-time:latest"
+      ]
+    }
+  }
+}
+```
+
+### Using binary
+
+```json
+{
+  "mcpServers": {
+    "time": {
+      "command": "mcp-time"
+    }
+  }
+}
+```
+
+#### Install from releases
+
+You can download the latest binary from the [releases page](https://github.com/TheoBrigitte/mcp-time/releases).
+
+#### Install with Go
+
+```bash
+go install github.com/TheoBrigitte/mcp-time/cmd/mcp-time@latest
+```
+
+This will install the `mcp-time` binary in your `$GOPATH/bin` directory.
+
+#### Building from Source
 
 ```bash
 git clone https://github.com/TheoBrigitte/mcp-time.git
@@ -41,29 +81,7 @@ cd mcp-time
 make install
 ```
 
-This will build and install the `mcp-time` binary in the `~/.local/bin` directory, which should be in your `PATH`.
-
-### Using Go Install
-
-```bash
-go install github.com/TheoBrigitte/mcp-time/cmd/mcp-time@latest
-```
-
-## Integration with AI Assistants
-
-This MCP server can be integrated with various AI assistants that support the Model Context Protocol.
-
-### Example MCP Client Configuration
-
-```json
-{
-  "servers": {
-    "time": {
-      "command": "/path/to/mcp-time"
-    }
-  }
-}
-```
+This will build and install the `mcp-time` binary in the `~/.local/bin` directory.
 
 ## Usage
 
@@ -85,11 +103,8 @@ mcp-time --transport stream --address "http://localhost:8080/mcp"
 
 The server supports several command-line options for more advanced configurations:
 
-```bash
-mcp-time --help
 ```
-
-```
+$ mcp-time --help
 An MCP (Model Context Protocol) server which provides utilities to work with time and dates.
 
 Usage:
@@ -105,13 +120,15 @@ Flags:
 
 ## Available Tools
 
-### `current_time`
+### `relative_time`
 
-Get the current time.
+Get a time based on a relative natural language expression.
 
 **Parameters:**
-- `format` (optional): The output format for the time. Can be a predefined format (e.g., `RFC3339`, `Kitchen`) or a custom Go layout.
-- `timezone` (optional): The target timezone in IANA format (e.g., `America/New_York`). Defaults to UTC.
+- `text` (required): The natural language expression (e.g., `yesterday`, `5 minutes ago`, `next month`).
+- `time` (optional): A reference time for the relative expression. Defaults to current time.
+- `timezone` (optional): The target timezone for the output.
+- `format` (optional): The output format for the time.
 
 ### `convert_timezone`
 
@@ -123,6 +140,14 @@ Convert a given time between timezones.
 - `output_timezone` (optional): The target timezone for the output.
 - `format` (optional): The output format for the time.
 
+### `current_time`
+
+Get the current time.
+
+**Parameters:**
+- `format` (optional): The output format for the time. Can be a predefined format (e.g., `RFC3339`, `Kitchen`) or a custom Go layout.
+- `timezone` (optional): The target timezone in IANA format (e.g., `America/New_York`). Defaults to UTC.
+
 ### `add_time`
 
 Add or subtract a duration to a given time.
@@ -130,16 +155,6 @@ Add or subtract a duration to a given time.
 **Parameters:**
 - `time` (required): The input time string.
 - `duration` (required): The duration to add or subtract (e.g., `2h30m`, `-1h`).
-- `timezone` (optional): The target timezone for the output.
-- `format` (optional): The output format for the time.
-
-### `relative_time`
-
-Get a time based on a relative natural language expression.
-
-**Parameters:**
-- `text` (required): The natural language expression (e.g., `yesterday`, `5 minutes ago`, `next month`).
-- `time` (optional): A reference time for the relative expression. Defaults to current time.
 - `timezone` (optional): The target timezone for the output.
 - `format` (optional): The output format for the time.
 

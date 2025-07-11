@@ -1,10 +1,10 @@
 name: go
 
-on: [pull_request, push]
+on: push
 
 jobs:
-  test:
-    runs-on: ubuntu-latest
+  build:
+    runs-on: ubuntu-24.04
     steps:
     - uses: actions/checkout@v4
     - uses: actions/setup-go@v5
@@ -15,4 +15,37 @@ jobs:
       run: go list -json -deps ./... > go.list
     - uses: sonatype-nexus-community/nancy-github-action@main
     - run: make test
-    - run: make build
+    - run: make build-all
+      env:
+        BUILD_USER: github-action
+    - name: Docker meta
+      id: meta
+      uses: docker/metadata-action@v5
+      with:
+        images: |
+          theo01/mcp-time
+        tags: |
+          type=ref,event=branch
+    - uses: docker/login-action@v3
+      with:
+        username: ${{ vars.DOCKERHUB_USERNAME }}
+        password: ${{ secrets.DOCKERHUB_TOKEN }}
+    - uses: docker/setup-buildx-action@v3
+    - uses: docker/build-push-action@v6
+      with:
+        push: true
+        tags: ${{ steps.meta.outputs.tags }}
+        context: .
+        file: docker/Dockerfile
+        platforms: linux/amd64,linux/arm64
+  test-linux-amd64:
+    needs: build
+    runs-on: ubuntu-24.04
+    steps:
+      - run: docker run --rm theo01/mcp-time:${{ github.ref_name }} --version
+  test-linux-arm64:
+    needs: build
+    runs-on: ubuntu-24.04-arm
+    steps:
+      - run: docker run --rm theo01/mcp-time:${{ github.ref_name }} --version
+  
