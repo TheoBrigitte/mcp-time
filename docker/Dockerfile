@@ -1,4 +1,4 @@
-FROM --platform=$BUILDPLATFORM scratch
+FROM scratch
 ARG TARGETOS
 ARG TARGETARCH
 
