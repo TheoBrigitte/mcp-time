@@ -48,4 +48,3 @@ jobs:
     runs-on: ubuntu-24.04-arm
     steps:
       - run: docker run --rm theo01/mcp-time:${{ github.ref_name }} --version
-  
