@@ -27,27 +27,53 @@ The Time MCP Server is a [Model Context Protocol (MCP)](https://github.com/model
 - **MCP Compliance**: Fully compatible with the Model Context Protocol standard.
 - **Multiple Transports**: Can be run using `stdio` for simple integrations or as an `HTTP stream` server for network access.
 
-## Prerequisites
-
-- Go 1.24.2 or later
-
 ## Installation
+
+This MCP server can be integrated with various AI assistants that support the Model Context Protocol.
 
 ### Using Docker
 
-```bash
-docker pull theo01/mcp-time:latest
+```json
+{
+  "mcpServers": {
+    "time": {
+      "command": "docker",
+      "args": [
+        "run",
+        "--rm",
+        "-i",
+        "theo01/mcp-time:latest"
+      ]
+    }
+  }
+}
 ```
 
-### Using Go Install
+### Using binary
+
+```json
+{
+  "mcpServers": {
+    "time": {
+      "command": "mcp-time"
+    }
+  }
+}
+```
+
+#### Install from releases
+
+You can download the latest binary from the [releases page](https://github.com/TheoBrigitte/mcp-time/releases).
+
+#### Install with Go
 
 ```bash
 go install github.com/TheoBrigitte/mcp-time/cmd/mcp-time@latest
 ```
 
-This will install the `mcp-time` binary in your `$GOPATH/bin` directory, which should be in your `$PATH`.
+This will install the `mcp-time` binary in your `$GOPATH/bin` directory.
 
-### Building from Source
+#### Building from Source
 
 ```bash
 git clone https://github.com/TheoBrigitte/mcp-time.git
@@ -55,38 +81,7 @@ cd mcp-time
 make install
 ```
 
-This will build and install the `mcp-time` binary in the `~/.local/bin` directory, which should be in your `$PATH`.
-
-## Integration with AI Assistants
-
-This MCP server can be integrated with various AI assistants that support the Model Context Protocol.
-
-### Example MCP Client Configuration
-
-- With Docker
-
-```json
-{
-  "servers": {
-    "time": {
-      "command": "docker",
-      "args": ["run", "--rm", "-i", "theo01/mcp-time:latest"]
-    }
-  }
-}
-```
-
-- With the binary installed
-
-```json
-{
-  "servers": {
-    "time": {
-      "command": "mcp-time"
-    }
-  }
-}
-```
+This will build and install the `mcp-time` binary in the `~/.local/bin` directory.
 
 ## Usage
 
@@ -108,11 +103,8 @@ mcp-time --transport stream --address "http://localhost:8080/mcp"
 
 The server supports several command-line options for more advanced configurations:
 
-```bash
-mcp-time --help
 ```
-
-```
+$ mcp-time --help
 An MCP (Model Context Protocol) server which provides utilities to work with time and dates.
 
 Usage:
