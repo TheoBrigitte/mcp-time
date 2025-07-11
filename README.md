@@ -45,6 +45,8 @@ Use the link below to install directly in [Cursor](https://cursor.com).
 
 ### Using Docker
 
+Copy the following JSON configuration into your MCP client to run the server using Docker:
+
 ```json
 {
   "mcpServers": {
@@ -63,6 +65,8 @@ Use the link below to install directly in [Cursor](https://cursor.com).
 
 ### Using binary
 
+Copy the following JSON configuration into your MCP client to run the server using the binary:
+
 ```json
 {
   "mcpServers": {
@@ -73,9 +77,17 @@ Use the link below to install directly in [Cursor](https://cursor.com).
 }
 ```
 
+You need to install the `mcp-time` binary on your system. You can do this in several ways:
+
 #### Install from releases
 
 You can download the latest binary from the [releases page](https://github.com/TheoBrigitte/mcp-time/releases).
+
+```bash
+# Replace OS-ARCH with your operating system and architecture (e.g., linux-amd64, darwin-arm64)
+curl -Lo mcp-time https://github.com/TheoBrigitte/mcp-time/releases/latest/download/mcp-time.OS-ARCH
+install -D -m 755 ./mcp-time ~/.local/bin/mcp-time
+```
 
 #### Install with Go
 
