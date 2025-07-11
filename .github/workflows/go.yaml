@@ -37,7 +37,7 @@ jobs:
         tags: ${{ steps.meta.outputs.tags }}
         context: .
         file: docker/Dockerfile
-        platforms: linux/amd64,linux/arm64
+        platforms: linux/amd64,linux/arm64,windows/amd64,windows/arm64
   test-linux-amd64:
     needs: build
     runs-on: ubuntu-24.04
