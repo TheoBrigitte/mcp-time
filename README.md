@@ -31,6 +31,16 @@ The Time MCP Server is a [Model Context Protocol (MCP)](https://github.com/model
 
 This MCP server can be integrated with various AI assistants that support the Model Context Protocol.
 
+### On Cursor
+
+<a href="https://cursor.com/install-mcp?name=time&config=JTdCJTIyY29tbWFuZCUyMiUzQSUyMmRvY2tlciUyMHJ1biUyMC0tcm0lMjAtaSUyMHRoZW8wMSUyRm1jcC10aW1lJTNBbGF0ZXN0JTIyJTdE">
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="https://cursor.com/deeplink/mcp-install-dark.svg">
+  <source media="(prefers-color-scheme: light)" srcset="https://cursor.com/deeplink/mcp-install-light.svg">
+  <img alt="Add to Cursor" src="https://cursor.com/deeplink/mcp-install-light.svg" width="200">
+</picture>
+</a>
+
 ### Using Docker
 
 ```json
