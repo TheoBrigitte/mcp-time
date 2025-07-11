@@ -33,7 +33,9 @@ This MCP server can be integrated with various AI assistants that support the Mo
 
 ### On Cursor
 
-<a href="https://cursor.com/install-mcp?name=time&config=JTdCJTIyY29tbWFuZCUyMiUzQSUyMmRvY2tlciUyMHJ1biUyMC0tcm0lMjAtaSUyMHRoZW8wMSUyRm1jcC10aW1lJTNBbGF0ZXN0JTIyJTdE">
+Use the link below to install directly in [Cursor](https://cursor.com).
+
+<a href="cursor://anysphere.cursor-deeplink/mcp/install?name=time&config=eyJjb21tYW5kIjoiZG9ja2VyIiwiYXJncyI6WyJydW4iLCItLXJtIiwiLWkiLCJ0aGVvMDEvbWNwLXRpbWU6bGF0ZXN0Il19">
 <picture>
   <source media="(prefers-color-scheme: dark)" srcset="https://cursor.com/deeplink/mcp-install-dark.svg">
   <source media="(prefers-color-scheme: light)" srcset="https://cursor.com/deeplink/mcp-install-light.svg">
