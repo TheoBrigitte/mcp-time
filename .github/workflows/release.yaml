@@ -37,10 +37,11 @@ jobs:
         file: docker/Dockerfile
         context: .
         platforms: linux/amd64,linux/arm64
-    - uses: goreleaser/goreleaser-action@v6
+    - name: Generate Changelog
+      id: generate_changelog
+      uses: ffurrer2/extract-release-notes@v2
+    - name: Create Release
+      uses: softprops/action-gh-release@v2
       with:
-        args: release --clean
-        version: '~> v2'
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        BUILD_BRANCH: ${{ vars.BUILD_BRANCH }}
+        body: ${{steps.generate_changelog.outputs.release_notes}}
+        files: build/*
