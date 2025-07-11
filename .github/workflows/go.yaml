@@ -37,7 +37,7 @@ jobs:
         tags: ${{ steps.meta.outputs.tags }}
         context: .
         file: docker/Dockerfile
-        platforms: linux/amd64,linux/arm64,windows/amd64,windows/arm64
+        platforms: linux/amd64,linux/arm64
   test-linux-amd64:
     needs: build
     runs-on: ubuntu-24.04
@@ -47,16 +47,4 @@ jobs:
     needs: build
     runs-on: ubuntu-24.04-arm
     steps:
-      - run: docker run --rm theo01/mcp-time:${{ github.ref_name }} --version
-  test-windows-amd64:
-    needs: build
-    runs-on: windows-latest
-    steps:
-      - run: docker pull mcr.microsoft.com/windows/nanoserver:ltsc2022
-      - run: docker run --rm theo01/mcp-time:${{ github.ref_name }} --version
-  test-windows-arm64:
-    needs: build
-    runs-on: windows-11-arm
-    steps:
-      - run: docker pull mcr.microsoft.com/windows/nanoserver:ltsc2022
       - run: docker run --rm theo01/mcp-time:${{ github.ref_name }} --version

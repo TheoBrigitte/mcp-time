@@ -87,7 +87,7 @@ docker: build ## Build the Docker image
 .PHONY: docker
 docker-all: build-all ## Build the Docker image for all architectures
 	@printf "$(CYAN)Building Docker image...$(RESET)\n"
-	docker buildx build --platform linux/amd64,linux/arm64,windows/amd64,windows/arm64 -f $(DOCKER_FILE) -t $(PROJECT_NAME) .
+	docker buildx build --platform linux/amd64,linux/arm64 -f $(DOCKER_FILE) -t $(PROJECT_NAME) .
 	@printf "$(GREEN)Docker image built successfully$(RESET)\n"
 
 .PHONY: clean
