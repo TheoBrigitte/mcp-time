@@ -16,9 +16,8 @@ import (
 )
 
 var (
-	// Name is the name of the application.
-	// It is set at build time using the -X linker flag.
-	Name = ""
+	// name is the name of the application.
+	name = "mcp-time"
 
 	// address is the listen address for the HTTP server.
 	address string
@@ -31,7 +30,7 @@ var (
 
 // cmd defines the root command for the MCP time server.
 var cmd = &cobra.Command{
-	Use:   Name,
+	Use:   name,
 	Short: "MCP server providing time and date utilities",
 	Long:  `An MCP (Model Context Protocol) server which provides utilities to work with time and dates.`,
 	RunE:  runner,
@@ -43,6 +42,10 @@ func init() {
 	cmd.Flags().StringVar(&logFile, "log-file", "", "Path to log file (logs is disabled if not specified)")
 	cmd.Flags().StringVarP(&transport, "transport", "t", mcp.TransportNames[mcp.TransportSTDIO], fmt.Sprintf("Transport layer: %v.", strings.Join(mcp.GetTransports(), ", ")))
 	cmd.Flags().BoolVar(&versionFlag, "version", false, "Print version information and exit")
+
+	if version.Version == "" {
+		version.Version = "dev" // Set a default version if not provided
+	}
 }
 
 // runner is the main execution function for the MCP server.
@@ -50,7 +53,7 @@ func init() {
 func runner(c *cobra.Command, args []string) (err error) {
 	// If the version flag is set, print the version and exit.
 	if versionFlag {
-		fmt.Println(version.Print(Name))
+		fmt.Println(version.Print(name))
 		return nil
 	}
 
@@ -87,7 +90,7 @@ func runner(c *cobra.Command, args []string) (err error) {
 	}()
 
 	// Create a new MCP server instance.
-	server := mcp.NewServer(Name, version.Version)
+	server := mcp.NewServer(name, version.Version)
 
 	// Start the server with the configured transport.
 	switch transport {

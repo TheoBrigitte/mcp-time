@@ -29,7 +29,6 @@ define build
 	mkdir -p $(BUILD_DIR)
 	GOOS=$(1) GOARCH=$(2) CGO_ENABLED=0 go build -v -o ./$(BUILD_DIR)/$(PROJECT_NAME).$(1)-$(2) -ldflags=" \
 	-s -w \
-	-X main.Name=$(PROJECT_NAME) \
 	-X github.com/prometheus/common/version.Version=$(VERSION) \
 	-X github.com/prometheus/common/version.Revision=$(shell git rev-parse HEAD) \
 	-X github.com/prometheus/common/version.Branch=$(shell git rev-parse --abbrev-ref HEAD) \
