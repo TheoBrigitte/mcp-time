@@ -101,6 +101,11 @@ func RegisterHandlers(s *server.MCPServer) {
 			mcp.DefaultString(datetime.GetDefaultFormat()),
 		),
 		timezoneProperty,
+
+		mcp.WithReadOnlyHintAnnotation(true),
+		mcp.WithDestructiveHintAnnotation(false),
+		mcp.WithIdempotentHintAnnotation(true),
+		mcp.WithOpenWorldHintAnnotation(false),
 	)
 	s.AddTool(currentTime, CurrentTime)
 
@@ -116,6 +121,11 @@ func RegisterHandlers(s *server.MCPServer) {
 		),
 		timeProperty,
 		formatProperty,
+
+		mcp.WithReadOnlyHintAnnotation(true),
+		mcp.WithDestructiveHintAnnotation(false),
+		mcp.WithIdempotentHintAnnotation(true),
+		mcp.WithOpenWorldHintAnnotation(false),
 	)
 	s.AddTool(convertTimezone, ConvertTime)
 
@@ -128,6 +138,11 @@ func RegisterHandlers(s *server.MCPServer) {
 		timeProperty,
 		timezoneProperty,
 		formatProperty,
+
+		mcp.WithReadOnlyHintAnnotation(true),
+		mcp.WithDestructiveHintAnnotation(false),
+		mcp.WithIdempotentHintAnnotation(true),
+		mcp.WithOpenWorldHintAnnotation(false),
 	)
 	s.AddTool(addTime, TimeAdd)
 
@@ -140,6 +155,11 @@ func RegisterHandlers(s *server.MCPServer) {
 		timeProperty,
 		timezoneProperty,
 		formatProperty,
+
+		mcp.WithReadOnlyHintAnnotation(true),
+		mcp.WithDestructiveHintAnnotation(false),
+		mcp.WithIdempotentHintAnnotation(true),
+		mcp.WithOpenWorldHintAnnotation(false),
 	)
 	s.AddTool(relativeTime, RelativeTime)
 
@@ -153,6 +173,11 @@ func RegisterHandlers(s *server.MCPServer) {
 			mcp.Description("The second time to compare."),
 			mcp.Required(),
 		),
+
+		mcp.WithReadOnlyHintAnnotation(true),
+		mcp.WithDestructiveHintAnnotation(false),
+		mcp.WithIdempotentHintAnnotation(true),
+		mcp.WithOpenWorldHintAnnotation(false),
 	)
 	s.AddTool(compareTime, CompareTime)
 }
