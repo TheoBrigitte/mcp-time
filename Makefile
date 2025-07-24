@@ -67,7 +67,7 @@ build-windows-arm64: ## Build the Go binary for ARM64 architecture on windows
 	$(call build,windows,arm64)
 
 .PHONY: build-all
-build-all: build-linux-amd64 build-linux-arm64 build-darwin-amd64 build-darwin-arm64 build-windows-amd64 build-windows-arm64 # Build all supported architectures
+build-all: build-linux-amd64 build-linux-arm64 build-darwin-amd64 build-darwin-arm64 build-windows-amd64 build-windows-arm64 ## Build all supported architectures
 
 .PHONY: install
 install: build ## Install the binary to ~/.local/bin
