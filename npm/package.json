@@ -31,6 +31,7 @@
     "mcp-time-darwin-x64": "0.1.0",
     "mcp-time-linux-arm64": "0.1.0",
     "mcp-time-linux-x64": "0.1.0",
+    "mcp-time-win32-arm64": "0.1.0",
     "mcp-time-win32-x64": "0.1.0"
   }
 }
