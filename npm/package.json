@@ -1,6 +1,6 @@
 {
   "name": "@theo.foobar/mcp-time",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "A mcp server providing standardized tools to perform time and date-related operations",
   "keywords": [
     "mcp",
@@ -28,11 +28,11 @@
   },
   "devDependencies": {},
   "optionalDependencies": {
-    "mcp-time-darwin-arm64": "0.1.0",
-    "mcp-time-darwin-x64": "0.1.0",
-    "mcp-time-linux-arm64": "0.1.0",
-    "mcp-time-linux-x64": "0.1.0",
-    "mcp-time-win32-arm64": "0.1.0",
-    "mcp-time-win32-x64": "0.1.0"
+    "mcp-time-darwin-arm64": "0.1.1",
+    "mcp-time-darwin-x64": "0.1.1",
+    "mcp-time-linux-arm64": "0.1.1",
+    "mcp-time-linux-x64": "0.1.1",
+    "mcp-time-win32-arm64": "0.1.1",
+    "mcp-time-win32-x64": "0.1.1"
   }
 }
