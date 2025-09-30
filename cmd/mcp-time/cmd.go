@@ -8,6 +8,7 @@ import (
 	"os/signal"
 	"strings"
 	"syscall"
+	_ "time/tzdata"
 
 	"github.com/prometheus/common/version"
 	"github.com/spf13/cobra"
