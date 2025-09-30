@@ -1,7 +1,24 @@
 {
   "name": "mcp-time",
   "version": "0.1.0",
-  "description": "A Go binary distributed via npm",
+  "description": "A mcp server providing standardized tools to perform time and date-related operations",
+  "keywords": [
+    "mcp",
+    "mcp-server",
+    "mcp-tools",
+    "modelcontextprotocol"
+  ],
+  "homepage": "https://github.com/TheoBrigitte/mcp-time#readme",
+  "bugs": {
+    "url": "https://github.com/TheoBrigitte/mcp-time/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/TheoBrigitte/mcp-time.git"
+  },
+  "license": "MIT",
+  "author": "Théo Brigitte <theo.brigitte@gmail.com>",
+  "type": "commonjs",
   "main": "index.js",
   "bin": {
     "mcp-time": "bin/cli"
@@ -15,11 +32,5 @@
     "mcp-time-linux-arm64": "0.1.0",
     "mcp-time-linux-x64": "0.1.0",
     "mcp-time-win32-x64": "0.1.0"
-  },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/your-repo/mcp-time.git"
-  },
-  "author": "",
-  "license": "ISC"
+  }
 }
