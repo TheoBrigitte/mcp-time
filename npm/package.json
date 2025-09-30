@@ -1,5 +1,5 @@
 {
-  "name": "mcp-time",
+  "name": "@theo.foobar/mcp-time",
   "version": "0.1.0",
   "description": "A mcp server providing standardized tools to perform time and date-related operations",
   "keywords": [
@@ -26,6 +26,7 @@
   "scripts": {
     "postinstall": "node ./install.js"
   },
+  "devDependencies": {},
   "optionalDependencies": {
     "mcp-time-darwin-arm64": "0.1.0",
     "mcp-time-darwin-x64": "0.1.0",
