@@ -1,21 +1,23 @@
 # This Makefile provides targets for building, linting and testing.
 
-# Variables
-PROJECT_NAME := mcp-time
+# Directories
 BUILD_DIR := build
 DOCKER_FILE := docker/Dockerfile
+NPM_PACKAGES_DIR := npm/packages
 
 # Build informations
-VERSION := $(shell git describe --always --long --dirty || date)
+BUILD_USER ?= $(shell whoami)@$(shell hostname)
 GOARCH ?= $(shell go env GOARCH)
 GOOS ?= $(shell go env GOOS)
-BUILD_USER ?= $(shell whoami)@$(shell hostname)
+PROJECT_NAME := mcp-time
+VERSION := $(shell git describe --always --long --dirty || date)
 
 # Default target
 .DEFAULT_GOAL := build
 
-OSES = linux darwin windows
+# Supported architectures and OSes
 ARCHS = amd64 arm64
+OSES = linux darwin windows
 EXT = $(if $(filter $(GOOS),windows),.exe,)
 
 # Colors for output
@@ -27,10 +29,13 @@ RESET := \033[0m
 
 ##@ Building
 
-define build
+GO_BIN := $(BUILD_DIR)/$(PROJECT_NAME).$(GOOS)-$(GOARCH)$(EXT)
+
+.PHONY: build
+build: ## Build the Go binary
 	@printf "$(CYAN)Building Go binary...$(RESET)\n"
 	mkdir -p $(BUILD_DIR)
-	GOOS=$(1) GOARCH=$(2) CGO_ENABLED=0 go build -v -o ./$(BUILD_DIR)/$(PROJECT_NAME).$(1)-$(2)$(EXT) -ldflags=" \
+	GOOS=$(GOOS) GOARCH=$(GOARCH) CGO_ENABLED=0 go build -v -o ./$(GO_BIN) -ldflags=" \
 	-s -w \
 	-X github.com/prometheus/common/version.Version=$(VERSION) \
 	-X github.com/prometheus/common/version.Revision=$(shell git rev-parse HEAD) \
@@ -38,31 +43,19 @@ define build
 	-X github.com/prometheus/common/version.BuildUser=$(BUILD_USER) \
 	-X github.com/prometheus/common/version.BuildDate=$(shell date --utc +%FT%T)" \
 	./cmd/$(PROJECT_NAME)
-	@printf "$(GREEN)Build completed. Output is in $(BUILD_DIR)/$(PROJECT_NAME).$(1)-$(2)$(RESET)\n"
-endef
-
-.PHONY: build
-build: ## Build the Go binary
-	$(call build,$(GOOS),$(GOARCH))
-
-.PHONY: build-%
-build-%: GOOS=$(word 2,$(subst -, ,$@))
-build-%: GOARCH=$(word 3,$(subst -, ,$@))
-build-%: ## Build the Go binary for a specific OS and architecture, e.g. build-linux-amd64
-	@if [ -z "$(GOOS)" ] || [ -z "$(GOARCH)" ]; then \
-		printf "$(RED)Error: invalid target, must be build-os-arch, e.g. build-linux-amd64$(RESET)\n"; \
-		exit 1; \
-	fi
-	$(call build,$(GOOS),$(GOARCH))
+	@printf "$(GREEN)Build completed. Output is in $(GO_BIN)\n"
 
 .PHONY: build-all
-build-all: $(foreach os,$(OSES),$(foreach arch,$(ARCHS),build-$(os)-$(arch))) ## Build the Go binary for all supported OSes and architectures
+build-all: ## Build the Go binary for all supported OSes and architectures
+	$(foreach GOOS,$(OSES),$(foreach GOARCH,$(ARCHS), \
+		$(MAKE) GOOS=$(GOOS) GOARCH=$(GOARCH) build; \
+	))
 
 .PHONY: install
 install: build ## Install the binary to ~/.local/bin
 	@printf "$(CYAN)Installing binary to ~/.local/bin...$(RESET)\n"
 	@mkdir -p ~/.local/bin
-	cp $(BUILD_DIR)/$(PROJECT_NAME).$(GOOS)-$(GOARCH) ~/.local/bin/$(PROJECT_NAME)
+	cp $(GO_BIN) ~/.local/bin/$(PROJECT_NAME)
 	chmod +x ~/.local/bin/$(PROJECT_NAME)
 	@printf "$(GREEN)Binary installed to ~/.local/bin/$(PROJECT_NAME)$(RESET)\n"
 
@@ -82,6 +75,7 @@ docker-all: build-all ## Build the Docker image for all architectures
 clean: ## Clean build artifacts and Docker images
 	@printf "$(CYAN)Cleaning build artifacts...$(RESET)\n"
 	rm -rf $(BUILD_DIR)
+	rm -rf $(NPM_PACKAGES_DIR)
 	@printf "$(CYAN)Removing Docker images...$(RESET)\n"
 	@docker rmi -f $(PROJECT_NAME) 2>/dev/null || true
 	@printf "$(GREEN)Cleanup completed$(RESET)\n"
@@ -128,33 +122,24 @@ security: nancy ## Run all security scans
 
 ##@ NPM Publishing
 
-NPM_DIR := npm
-NPM_PACKAGES_DIR := $(NPM_DIR)/packages
-
-.PHONY: npm-packages
-npm-packages: build-all ## Create all npm packages for binaries
-	@printf "$(CYAN)Creating npm packages...$(RESET)\n"
-	rm -rf $(NPM_PACKAGES_DIR)
-	mkdir -p $(NPM_PACKAGES_DIR)
-	$(foreach plat,$(PLATFORMS),$(call create_npm_package,$(plat)))
-	$(foreach os,$(OSES),$(foreach arch,$(ARCHS),$(call create_npm_package,$(os)-$(arch))))
-	@printf "$(GREEN)NPM packages created in $(NPM_PACKAGES_DIR)$(RESET)\n"
-
-# GOOS and GOARCH are separated by '-'
-define create_npm_package
-	$(eval GOOS := $(word 1,$(subst -, ,$1)))
-	$(eval GOARCH := $(word 2,$(subst -, ,$1)))
-	$(eval NPM_CPU := $(if $(filter $(GOARCH),amd64),x64,$(GOARCH)))
-	$(eval NPM_OS := $(if $(filter $(GOOS),windows),win32,$(GOOS)))
-	$(eval PKG_NAME := $(PROJECT_NAME)-$(NPM_OS)-$(NPM_CPU))
-	$(eval PKG_DIR := $(NPM_PACKAGES_DIR)/$(PKG_NAME))
-	$(eval BIN_NAME := $(PROJECT_NAME)$(EXT))
-	@printf "  Creating package for $(GOOS)/$(GOARCH) -> $(NPM_OS)/$(NPM_CPU)\n"
+.PHONY: npm-package
+npm-package: NPM_CPU := $(if $(filter $(GOARCH),amd64),x64,$(GOARCH))
+npm-package: NPM_OS := $(if $(filter $(GOOS),windows),win32,$(GOOS))
+npm-package: PKG_NAME := $(PROJECT_NAME)-$(NPM_OS)-$(NPM_CPU)
+npm-package: PKG_DIR := $(NPM_PACKAGES_DIR)/$(PKG_NAME)
+npm-package: build ## Create an npm package for the current binary
+	@printf "$(CYAN)Creating npm package for $(GOOS)/$(GOARCH) -> $(NPM_OS)/$(NPM_CPU)$(RESET)\n"
 	mkdir -p $(PKG_DIR)/bin
-	cp $(BUILD_DIR)/$(PROJECT_NAME).$(GOOS)-$(GOARCH)$(EXT) $(PKG_DIR)/bin/$(BIN_NAME)
-	chmod +x $(PKG_DIR)/bin/$(BIN_NAME)
-	@echo "$$package_json" > $(PKG_DIR)/package.json
-endef
+	cp $(GO_BIN) $(PKG_DIR)/bin/$(PROJECT_NAME)$(EXT)
+	chmod +x $(PKG_DIR)/bin/$(PROJECT_NAME)$(EXT)
+	echo "$$package_json" > $(PKG_DIR)/package.json
+	@printf "$(GREEN)NPM package created in $(PKG_DIR)$(RESET)\n"
+
+.PHONY: npm-package-all
+npm-package-all: ## Create all npm packages for binaries
+	$(foreach GOOS,$(OSES),$(foreach GOARCH,$(ARCHS), \
+		$(MAKE) GOOS=$(GOOS) GOARCH=$(GOARCH) npm-package; \
+	))
 
 define package_json
 {
@@ -181,7 +166,3 @@ help: ## Display this help message
 	@printf "  make lint-all                       # Run all code quality checks\n"
 	@printf "  make security                       # Run all security scans\n"
 	@printf "  make clean                          # Clean all artifacts\n"
-
-help-build: ## Display help for supported build targets
-	@printf "$(CYAN)Build targets:$(RESET)\n"
-	@$(foreach os,$(OSES),$(foreach arch,$(ARCHS),printf "  make build-%s-%s\n" $(os) $(arch);))
