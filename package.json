@@ -1,0 +1,25 @@
+{
+  "name": "mcp-time",
+  "version": "0.3.1",
+  "description": "MCP (Model Context Protocol) server which provides utilities to work with time and dates, with natural language, multiple formats and timezone convertion capabilities",
+  "main": "bin/index.js",
+  "bin": {
+    "mcp-time": "bin/index.js"
+  },
+  "keywords": [
+    "mcp",
+    "mcp-server",
+    "modelcontextprotocol",
+    "mcp-tools"
+  ],
+  "homepage": "https://github.com/TheoBrigitte/mcp-time#readme",
+  "bugs": {
+    "url": "https://github.com/TheoBrigitte/mcp-time/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/TheoBrigitte/mcp-time.git"
+  },
+  "license": "MIT",
+  "author": "Théo Brigitte"
+}

@@ -1,0 +1,4 @@
+#!/usr/bin/env node
+const { runBinary } = require('../index')
+
+runBinary(...process.argv.slice(2))

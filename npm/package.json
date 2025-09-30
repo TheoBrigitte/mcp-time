@@ -1,0 +1,25 @@
+{
+  "name": "mcp-time",
+  "version": "0.1.0",
+  "description": "A Go binary distributed via npm",
+  "main": "index.js",
+  "bin": {
+    "mcp-time": "bin/cli"
+  },
+  "scripts": {
+    "postinstall": "node ./install.js"
+  },
+  "optionalDependencies": {
+    "mcp-time-darwin-arm64": "0.1.0",
+    "mcp-time-darwin-x64": "0.1.0",
+    "mcp-time-linux-arm64": "0.1.0",
+    "mcp-time-linux-x64": "0.1.0",
+    "mcp-time-win32-x64": "0.1.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/your-repo/mcp-time.git"
+  },
+  "author": "",
+  "license": "ISC"
+}

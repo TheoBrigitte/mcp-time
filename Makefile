@@ -2,7 +2,6 @@
 
 # Variables
 PROJECT_NAME := mcp-time
-ROOT_DIR := $(shell pwd)
 BUILD_DIR := build
 DOCKER_FILE := docker/Dockerfile
 
@@ -14,6 +13,10 @@ BUILD_USER ?= $(shell whoami)@$(shell hostname)
 
 # Default target
 .DEFAULT_GOAL := build
+
+OSES = linux darwin windows
+ARCHS = amd64 arm64
+EXT = $(if $(filter $(GOOS),windows),.exe,)
 
 # Colors for output
 CYAN := \033[36m
@@ -27,7 +30,7 @@ RESET := \033[0m
 define build
 	@printf "$(CYAN)Building Go binary...$(RESET)\n"
 	mkdir -p $(BUILD_DIR)
-	GOOS=$(1) GOARCH=$(2) CGO_ENABLED=0 go build -v -o ./$(BUILD_DIR)/$(PROJECT_NAME).$(1)-$(2) -ldflags=" \
+	GOOS=$(1) GOARCH=$(2) CGO_ENABLED=0 go build -v -o ./$(BUILD_DIR)/$(PROJECT_NAME).$(1)-$(2)$(EXT) -ldflags=" \
 	-s -w \
 	-X github.com/prometheus/common/version.Version=$(VERSION) \
 	-X github.com/prometheus/common/version.Revision=$(shell git rev-parse HEAD) \
@@ -42,32 +45,18 @@ endef
 build: ## Build the Go binary
 	$(call build,$(GOOS),$(GOARCH))
 
-.PHONY: build-linux-amd64
-build-linux-amd64: ## Build the Go binary for AMD64 architecture on linux
-	$(call build,linux,amd64)
-
-.PHONY: build-linux-arm64
-build-linux-arm64: ## Build the Go binary for ARM64 architecture on linux
-	$(call build,linux,arm64)
-
-.PHONY: build-darwin-amd64
-build-darwin-amd64: ## Build the Go binary for AMD64 architecture on darwin
-	$(call build,darwin,amd64)
-
-.PHONY: build-darwin-arm64
-build-darwin-arm64: ## Build the Go binary for ARM64 architecture on darwin
-	$(call build,darwin,arm64)
-
-.PHONY: build-windows-amd64
-build-windows-amd64: ## Build the Go binary for AMD64 architecture on windows
-	$(call build,windows,amd64)
-
-.PHONY: build-windows-arm64
-build-windows-arm64: ## Build the Go binary for ARM64 architecture on windows
-	$(call build,windows,arm64)
+.PHONY: build-%
+build-%: GOOS=$(word 2,$(subst -, ,$@))
+build-%: GOARCH=$(word 3,$(subst -, ,$@))
+build-%: ## Build the Go binary for a specific OS and architecture, e.g. build-linux-amd64
+	@if [ -z "$(GOOS)" ] || [ -z "$(GOARCH)" ]; then \
+		printf "$(RED)Error: invalid target, must be build-os-arch, e.g. build-linux-amd64$(RESET)\n"; \
+		exit 1; \
+	fi
+	$(call build,$(GOOS),$(GOARCH))
 
 .PHONY: build-all
-build-all: build-linux-amd64 build-linux-arm64 build-darwin-amd64 build-darwin-arm64 build-windows-amd64 build-windows-arm64 ## Build all supported architectures
+build-all: $(foreach os,$(OSES),$(foreach arch,$(ARCHS),build-$(os)-$(arch))) ## Build the Go binary for all supported OSes and architectures
 
 .PHONY: install
 install: build ## Install the binary to ~/.local/bin
@@ -137,11 +126,52 @@ nancy: ## Run Nancy vulnerability scan
 .PHONY: security
 security: nancy ## Run all security scans
 
+##@ NPM Publishing
+
+NPM_DIR := npm
+NPM_PACKAGES_DIR := $(NPM_DIR)/packages
+
+.PHONY: npm-packages
+npm-packages: build-all ## Create all npm packages for binaries
+	@printf "$(CYAN)Creating npm packages...$(RESET)\n"
+	rm -rf $(NPM_PACKAGES_DIR)
+	mkdir -p $(NPM_PACKAGES_DIR)
+	$(foreach plat,$(PLATFORMS),$(call create_npm_package,$(plat)))
+	$(foreach os,$(OSES),$(foreach arch,$(ARCHS),$(call create_npm_package,$(os)-$(arch))))
+	@printf "$(GREEN)NPM packages created in $(NPM_PACKAGES_DIR)$(RESET)\n"
+
+# GOOS and GOARCH are separated by '-'
+define create_npm_package
+	$(eval GOOS := $(word 1,$(subst -, ,$1)))
+	$(eval GOARCH := $(word 2,$(subst -, ,$1)))
+	$(eval NPM_CPU := $(if $(filter $(GOARCH),amd64),x64,$(GOARCH)))
+	$(eval NPM_OS := $(if $(filter $(GOOS),windows),win32,$(GOOS)))
+	$(eval PKG_NAME := $(PROJECT_NAME)-$(NPM_OS)-$(NPM_CPU))
+	$(eval PKG_DIR := $(NPM_PACKAGES_DIR)/$(PKG_NAME))
+	$(eval BIN_NAME := $(PROJECT_NAME)$(EXT))
+	@printf "  Creating package for $(GOOS)/$(GOARCH) -> $(NPM_OS)/$(NPM_CPU)\n"
+	mkdir -p $(PKG_DIR)/bin
+	cp $(BUILD_DIR)/$(PROJECT_NAME).$(GOOS)-$(GOARCH)$(EXT) $(PKG_DIR)/bin/$(BIN_NAME)
+	chmod +x $(PKG_DIR)/bin/$(BIN_NAME)
+	@echo "$$package_json" > $(PKG_DIR)/package.json
+endef
+
+define package_json
+{
+  "name": "$(PKG_NAME)",
+  "version": "$(VERSION)",
+  "description": "Binary for $(PROJECT_NAME) on $(NPM_OS) $(NPM_CPU)",
+  "os": ["$(NPM_OS)"],
+  "cpu": ["$(NPM_CPU)"]
+}
+endef
+export package_json
+
 ##@ Help
 
 .PHONY: help
 help: ## Display this help message
-	@awk 'BEGIN {FS = ":.*##"; printf "\n$(CYAN)Usage:$(RESET)\n  make $(YELLOW)<target>$(RESET)\n"} /^[a-zA-Z_0-9-]+:.*?##/ { printf "  $(YELLOW)%-20s$(RESET) %s\n", $$1, $$2 } /^##@/ { printf "\n$(CYAN)%s$(RESET)\n", substr($$0, 5) } ' $(MAKEFILE_LIST)
+	@awk 'BEGIN {FS = ":.*##"; printf "\n$(CYAN)Usage:$(RESET)\n  make $(YELLOW)<target>$(RESET)\n"} /^[a-zA-Z_0-9-]+.*?##/ { printf "  $(YELLOW)%-20s$(RESET) %s\n", $$1, $$2 } /^##@/ { printf "\n$(CYAN)%s$(RESET)\n", substr($$0, 5) } ' $(MAKEFILE_LIST)
 	@printf "\n"
 	@printf "$(CYAN)Examples:$(RESET)\n"
 	@printf "  make install                        # Install to ~/.local/bin\n"
@@ -151,3 +181,7 @@ help: ## Display this help message
 	@printf "  make lint-all                       # Run all code quality checks\n"
 	@printf "  make security                       # Run all security scans\n"
 	@printf "  make clean                          # Clean all artifacts\n"
+
+help-build: ## Display help for supported build targets
+	@printf "$(CYAN)Build targets:$(RESET)\n"
+	@$(foreach os,$(OSES),$(foreach arch,$(ARCHS),printf "  make build-%s-%s\n" $(os) $(arch);))
