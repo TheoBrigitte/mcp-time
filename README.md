@@ -115,8 +115,6 @@ install -D -m 755 ./mcp-time ~/.local/bin/mcp-time
 
 For Go developers, install directly using `go install`:
 
-Compile and install the binary using `go install`:
-
 ```bash
 go install github.com/TheoBrigitte/mcp-time/cmd/mcp-time@latest
 ```
@@ -126,8 +124,6 @@ The binary will be installed in your `$GOPATH/bin` directory.
 #### Option 3: Build from Source
 
 Clone and build the project using `make`:
-
-Clone the repository and build the binary using `make`:
 
 ```bash
 git clone https://github.com/TheoBrigitte/mcp-time.git
