@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/araddon/dateparse"
 	"github.com/tj/go-naturaldate"
 )
 
@@ -76,16 +75,33 @@ func RelativeTime(inputTime, relativeTime, timezone, format string) (output stri
 //   - -1 if timeA is before timeB
 //   - 0 if timeA is equal to timeB
 //   - 1 if timeA is after timeB
-func CompareTime(timeA, timeB string) (int, error) {
-	tA, err := dateparse.ParseAny(timeA)
+func CompareTime(timeA, timeB, timeATimezone, timeBTimezone string) (int, error) {
+	var err error
+	var timeALocation = defaultLocation
+	if timeATimezone != "" {
+		// Load the input timezone location from the IANA timezone database.
+		timeALocation, err = time.LoadLocation(timeATimezone)
+		if err != nil {
+			return -2, fmt.Errorf("invalid_timezone: Invalid IANA input timezone name for time_a: %s", timeATimezone)
+		}
+	}
+	ta, err := fromStringWithLocation(timeA, timeALocation)
 	if err != nil {
-		return -2, fmt.Errorf("invalid_time: invalid format for timeA: %q", timeA)
+		return -2, fmt.Errorf("invalid_time: invalid format for time_a: %q", timeA)
 	}
 
-	tB, err := dateparse.ParseAny(timeB)
+	var timeBLocation = defaultLocation
+	if timeBTimezone != "" {
+		// Load the input timezone location from the IANA timezone database.
+		timeBLocation, err = time.LoadLocation(timeBTimezone)
+		if err != nil {
+			return -2, fmt.Errorf("invalid_timezone: Invalid IANA input timezone name for time_b: %s", timeBTimezone)
+		}
+	}
+	tb, err := fromStringWithLocation(timeB, timeBLocation)
 	if err != nil {
-		return -2, fmt.Errorf("invalid_time: invalid format for timeB: %q", timeB)
+		return -2, fmt.Errorf("invalid_time: invalid format for time_b: %q", timeB)
 	}
 
-	return tA.Compare(tB), nil
+	return ta.time.Compare(tb.time), nil
 }

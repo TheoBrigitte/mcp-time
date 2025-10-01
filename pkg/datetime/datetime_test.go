@@ -418,32 +418,104 @@ func TestCompareTime(t *testing.T) {
 	tests := []struct {
 		name           string
 		timeA          string
+		timeATimezone  string
 		timeB          string
+		timeBTimezone  string
 		expectedResult int
 	}{
 		{
 			"equal",
 			"2025-07-08T12:34:56Z",
+			"",
 			"2025-07-08T12:34:56Z",
+			"",
 			0,
 		},
 		{
 			"timeA < timeB",
 			"2025-07-08T12:34:56Z",
+			"",
 			"2025-07-08T12:34:56.1Z",
+			"",
 			-1,
 		},
 		{
 			"timeA > timeB",
 			"2025-07-08T12:34:56.1Z",
+			"",
 			"2025-07-08T12:34:56Z",
+			"",
 			1,
+		},
+		{
+			"equal with timezones - same instant",
+			"2025-07-08T12:34:56",
+			"UTC",
+			"2025-07-08T08:34:56",
+			"America/New_York",
+			0,
+		},
+		{
+			"timeA < timeB with timezones",
+			"2025-07-08T12:34:56",
+			"UTC",
+			"2025-07-08T09:34:56",
+			"America/New_York",
+			-1,
+		},
+		{
+			"timeA > timeB with timezones",
+			"2025-07-08T12:34:56",
+			"UTC",
+			"2025-07-08T07:34:56",
+			"America/New_York",
+			1,
+		},
+		{
+			"equal with only timeA timezone",
+			"2025-07-08T12:34:56",
+			"America/New_York",
+			"2025-07-08T16:34:56Z",
+			"",
+			0,
+		},
+		{
+			"equal with only timeB timezone",
+			"2025-07-08T12:34:56Z",
+			"",
+			"2025-07-08T08:34:56",
+			"America/New_York",
+			0,
+		},
+		{
+			"cross-timezone comparison EST vs PST",
+			"2025-07-08T12:00:00",
+			"America/New_York",
+			"2025-07-08T09:00:00",
+			"America/Los_Angeles",
+			0,
+		},
+		{
+			"cross-timezone comparison UTC vs Tokyo",
+			"2025-07-08T12:00:00",
+			"UTC",
+			"2025-07-08T21:00:00",
+			"Asia/Tokyo",
+			0,
+		},
+		{
+			"different times with different timezones",
+			"2025-07-08T10:00:00",
+			"Europe/London",
+			"2025-07-08T06:00:00",
+			"America/New_York",
+			-1,
 		},
 	}
 
 	for _, test := range tests {
 		t.Run(test.name, func(t *testing.T) {
-			result, err := CompareTime(test.timeA, test.timeB)
+			result, err := CompareTime(test.timeA, test.timeB, test.timeATimezone, test.timeBTimezone)
 			if err != nil {
 				t.Errorf("unexpected error %v", err)
 				return
