@@ -4,10 +4,12 @@
 
 <div align="center">
 
-<a href="https://github.com/TheoBrigitte/mcp-time/releases"><img src="https://img.shields.io/github/release/TheoBrigitte/mcp-time.svg" alt="Github release"></a>
-<a href="https://github.com/TheoBrigitte/mcp-time/actions/workflows/build.yaml"><img src="https://github.com/TheoBrigitte/mcp-time/actions/workflows/build.yaml/badge.svg?branch=main" alt="Github action"></a>
-<a href="https://pkg.go.dev/github.com/TheoBrigitte/mcp-time"><img src="https://pkg.go.dev/badge/github.com/TheoBrigitte/mcp-time.svg" alt="Go reference"></a>
-<a href="https://archestra.ai/mcp-catalog/theobrigitte__mcp-time"><img src="https://archestra.ai/mcp-catalog/api/badge/quality/TheoBrigitte/mcp-time" alt="Trust Score"></a>
+[![GitHub release](https://img.shields.io/github/release/TheoBrigitte/mcp-time.svg)](https://github.com/TheoBrigitte/mcp-time/releases)
+[![Build Status](https://github.com/TheoBrigitte/mcp-time/actions/workflows/build.yaml/badge.svg?branch=main)](https://github.com/TheoBrigitte/mcp-time/actions/workflows/build.yaml)
+[![Go Reference](https://pkg.go.dev/badge/github.com/TheoBrigitte/mcp-time.svg)](https://pkg.go.dev/github.com/TheoBrigitte/mcp-time)
+[![Trust Score](https://archestra.ai/mcp-catalog/api/badge/quality/TheoBrigitte/mcp-time)](https://archestra.ai/mcp-catalog/theobrigitte__mcp-time)
+[![NPM Package](https://img.shields.io/npm/v/@theo.foobar/mcp-time)](https://www.npmjs.com/package/@theo.foobar/mcp-time)
+[![Docker Image](https://img.shields.io/docker/v/theo01/mcp-time?label=docker)](https://hub.docker.com/r/theo01/mcp-time)
 
 <strong>Time MCP Server</strong>
 
@@ -21,20 +23,20 @@ The Time MCP Server is a [Model Context Protocol (MCP)](https://github.com/model
 
 ## Features
 
-- **Time Manipulation**: Get current time, convert between timezones, and add or subtract durations.
-- **Natural Language Parsing**: Understands relative time expressions like "yesterday" or "next month".
-- **Time Comparison**: Compare two different times.
-- **Flexible Formatting**: Supports a wide variety of predefined and custom time formats.
-- **MCP Compliance**: Fully compatible with the Model Context Protocol standard.
-- **Multiple Transports**: Can be run using `stdio` for simple integrations or as an `HTTP stream` server for network access.
+- **⏰ Time Manipulation** - Get current time, convert between timezones, and add or subtract durations
+- **🗣️ Natural Language Parsing** - Understands relative time expressions like "yesterday" or "next month"
+- **⚖️ Time Comparison** - Compare two different times with ease
+- **🎨 Flexible Formatting** - Supports a wide variety of predefined and custom time formats
+- **✅ MCP Compliance** - Fully compatible with the Model Context Protocol standard
+- **🔄 Multiple Transports** - Supports `stdio` for local integrations and `HTTP stream` for network access
 
 ## Installation
 
-This MCP server can be integrated with various AI assistants that support the Model Context Protocol.
+This MCP server can be integrated with various AI assistant clients that support the Model Context Protocol, including [Cursor](https://cursor.com/), [Claude Desktop](https://claude.ai/download), [Claude Code](https://www.claude.com/product/claude-code), and [many more](https://modelcontextprotocol.io/clients).
 
-### On Cursor
+### 🚀 One-Click Install (Cursor)
 
-Use the link below to install directly in [Cursor](https://cursor.com).
+Click the button below to automatically configure the MCP server using Docker in your [Cursor](https://cursor.com) environment:
 
 <a href="cursor://anysphere.cursor-deeplink/mcp/install?name=time&config=eyJjb21tYW5kIjoiZG9ja2VyIiwiYXJncyI6WyJydW4iLCItLXJtIiwiLWkiLCJ0aGVvMDEvbWNwLXRpbWU6bGF0ZXN0Il19">
 <picture>
@@ -46,7 +48,7 @@ Use the link below to install directly in [Cursor](https://cursor.com).
 
 ### Using npx (JavaScript/Node.js)
 
-Using this method will run the MCP server using [`npx`](https://docs.npmjs.com/cli/v8/commands/npx), which requires Node.js to be installed on your system. Then copy the following JSON configuration into your MCP client to run the server:
+This method runs the MCP server using [`npx`](https://docs.npmjs.com/cli/v8/commands/npx), which requires Node.js to be installed. Copy the following JSON configuration into your MCP client settings:
 
 ```json
 {
@@ -65,12 +67,13 @@ Using this method will run the MCP server using [`npx`](https://docs.npmjs.com/c
 
 ### Using Docker
 
-Copy the following JSON configuration into your MCP client to run the server using Docker:
+Run the MCP server in an isolated container. Requires [Docker](https://www.docker.com/get-started/) to be installed. Copy this JSON configuration into your MCP client settings:
 
 ```json
 {
   "mcpServers": {
-    "time": {
+    "mcp-time": {
+      "type": "stdio",
       "command": "docker",
       "args": [
         "run",
@@ -85,39 +88,42 @@ Copy the following JSON configuration into your MCP client to run the server usi
 
 ### Using binary
 
-Copy the following JSON configuration into your MCP client to run the server using the binary:
+Install the `mcp-time` binary directly on your system. Choose one of the installation methods below, ensuring the binary is placed in a directory that's in your `PATH`. Then add this JSON configuration to your MCP client settings:
 
 ```json
 {
   "mcpServers": {
-    "time": {
+    "mcp-time": {
+      "type": "stdio",
       "command": "mcp-time"
     }
   }
 }
 ```
 
-You need to install the `mcp-time` binary on your system. You can do this in several ways:
+#### Option 1: Download from Releases
 
-#### Install from releases
-
-You can download the latest binary from the [releases page](https://github.com/TheoBrigitte/mcp-time/releases).
+Download the latest pre-built binary from the [releases page](https://github.com/TheoBrigitte/mcp-time/releases):
 
 ```bash
-# Replace OS-ARCH with your operating system and architecture (e.g., linux-amd64, darwin-arm64)
+# Replace OS-ARCH with your platform (e.g., linux-amd64, darwin-arm64, windows-amd64)
 curl -Lo mcp-time https://github.com/TheoBrigitte/mcp-time/releases/latest/download/mcp-time.OS-ARCH
 install -D -m 755 ./mcp-time ~/.local/bin/mcp-time
 ```
 
-#### Install with Go
+#### Option 2: Install with Go
+
+For Go developers, install directly using `go install`:
 
 ```bash
 go install github.com/TheoBrigitte/mcp-time/cmd/mcp-time@latest
 ```
 
-This will install the `mcp-time` binary in your `$GOPATH/bin` directory.
+The binary will be installed in your `$GOPATH/bin` directory.
 
-#### Building from Source
+#### Option 3: Build from Source
+
+Clone and build the project using `make`:
 
 ```bash
 git clone https://github.com/TheoBrigitte/mcp-time.git
@@ -125,27 +131,25 @@ cd mcp-time
 make install
 ```
 
-This will build and install the `mcp-time` binary in the `~/.local/bin` directory.
+The binary will be installed in `~/.local/bin/mcp-time`.
 
 ## Usage
 
 ### Basic Usage
 
-Start the MCP server with the default `stdio` transport:
-
+**Start with stdio transport** (default, for MCP clients):
 ```bash
 mcp-time
 ```
 
-Start the MCP server with the `stream` transport:
-
+**Start with HTTP stream transport** (for network access):
 ```bash
 mcp-time --transport stream --address "http://localhost:8080/mcp"
 ```
 
-### Advanced Usage
+### Command-Line Options
 
-The server supports several command-line options for more advanced configurations:
+The server supports the following flags for advanced configurations:
 
 ```
 $ mcp-time --help
@@ -164,59 +168,76 @@ Flags:
 
 ## Available Tools
 
+### `current_time`
+
+Get the current time in any timezone and format.
+
+**Parameters:**
+- `format` (optional) - The output format (predefined like `RFC3339`, `Kitchen`, or custom Go layout)
+- `timezone` (optional) - Target timezone in IANA format (e.g., `America/New_York`). Defaults to UTC
+
+**Example:** "What time is it in Tokyo?"
+
 ### `relative_time`
 
 Get a time based on a relative natural language expression.
 
 **Parameters:**
-- `text` (required): The natural language expression (e.g., `yesterday`, `5 minutes ago`, `next month`).
-- `time` (optional): A reference time for the relative expression. Defaults to current time.
-- `timezone` (optional): The target timezone for the output.
-- `format` (optional): The output format for the time.
+- `text` (required) - Natural language expression (e.g., `yesterday`, `5 minutes ago`, `next month`)
+- `time` (optional) - Reference time for the expression. Defaults to current time
+- `timezone` (optional) - Target timezone for the output
+- `format` (optional) - Output format for the time
+
+**Example:** "What was the date 3 weeks ago?"
 
 ### `convert_timezone`
 
 Convert a given time between timezones.
 
 **Parameters:**
-- `time` (required): The input time string. It can be in various formats.
-- `input_timezone` (optional): The timezone of the input time.
-- `output_timezone` (optional): The target timezone for the output.
-- `format` (optional): The output format for the time.
+- `time` (required) - Input time string (supports various formats)
+- `input_timezone` (optional) - Timezone of the input time
+- `output_timezone` (optional) - Target timezone for the output
+- `format` (optional) - Output format for the time
 
-### `current_time`
-
-Get the current time.
-
-**Parameters:**
-- `format` (optional): The output format for the time. Can be a predefined format (e.g., `RFC3339`, `Kitchen`) or a custom Go layout.
-- `timezone` (optional): The target timezone in IANA format (e.g., `America/New_York`). Defaults to UTC.
+**Example:** "Convert 2:30 PM EST to Tokyo time"
 
 ### `add_time`
 
-Add or subtract a duration to a given time.
+Add or subtract a duration from a given time.
 
 **Parameters:**
-- `time` (required): The input time string.
-- `duration` (required): The duration to add or subtract (e.g., `2h30m`, `-1h`).
-- `timezone` (optional): The target timezone for the output.
-- `format` (optional): The output format for the time.
+- `time` (required) - Input time string
+- `duration` (required) - Duration to add/subtract (e.g., `2h30m`, `-1h`, `24h`)
+- `timezone` (optional) - Target timezone for the output
+- `format` (optional) - Output format for the time
+
+**Example:** "What time will it be in 45 minutes?"
 
 ### `compare_time`
 
-Compare two times.
+Compare two times and determine their relationship.
 
 **Parameters:**
-- `time_a` (required): The first time to compare.
-- `time_b` (required): The second time to compare.
+- `time_a` (required) - First time to compare
+- `time_b` (required) - Second time to compare
 
 **Returns:**
-- `-1` if `time_a` is before `time_b`.
-- `0` if `time_a` is equal to `time_b`.
-- `1` if `time_a` is after `time_b`.
+- `-1` if `time_a` is before `time_b`
+- `0` if `time_a` equals `time_b`
+- `1` if `time_a` is after `time_b`
+
+## Contributing
+
+Contributions are welcome! Please feel free to submit a Pull Request. For major changes, please open an issue first to discuss what you would like to change.
+
+## License
+
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
 ## Credits
 
-- https://github.com/araddon/dateparse
-- https://github.com/tj/go-naturaldate
-- https://github.com/mark3labs/mcp-go
+Built with these excellent libraries:
+- [araddon/dateparse](https://github.com/araddon/dateparse) - Parse dates without knowing the format
+- [tj/go-naturaldate](https://github.com/tj/go-naturaldate) - Natural language date parsing
+- [mark3labs/mcp-go](https://github.com/mark3labs/mcp-go) - Model Context Protocol SDK for Go
