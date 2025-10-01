@@ -3,7 +3,7 @@
 # Directories
 BUILD_DIR := build
 DOCKER_FILE := docker/Dockerfile
-NPM_PACKAGES_DIR := npm/packages
+NPM_DIR := npm
 
 # Build informations
 BUILD_USER ?= $(shell whoami)@$(shell hostname)
@@ -75,7 +75,7 @@ docker-all: build-all ## Build the Docker image for all architectures
 clean: ## Clean build artifacts and Docker images
 	@printf "$(CYAN)Cleaning build artifacts...$(RESET)\n"
 	rm -rf $(BUILD_DIR)
-	rm -rf $(NPM_PACKAGES_DIR)
+	rm -rf $(NPM_DIR)/packages
 	@printf "$(CYAN)Removing Docker images...$(RESET)\n"
 	@docker rmi -f $(PROJECT_NAME) 2>/dev/null || true
 	@printf "$(GREEN)Cleanup completed$(RESET)\n"
@@ -122,11 +122,12 @@ security: nancy ## Run all security scans
 
 ##@ NPM Publishing
 
+NPM_CPU := $(if $(filter $(GOARCH),amd64),x64,$(GOARCH))
+NPM_OS := $(GOOS)
+PKG_NAME := $(PROJECT_NAME)-$(NPM_OS)-$(NPM_CPU)
+PKG_DIR := $(NPM_DIR)/packages/$(PKG_NAME)
+
 .PHONY: npm-package
-npm-package: NPM_CPU := $(if $(filter $(GOARCH),amd64),x64,$(GOARCH))
-npm-package: NPM_OS := $(if $(filter $(GOOS),windows),win32,$(GOOS))
-npm-package: PKG_NAME := $(PROJECT_NAME)-$(NPM_OS)-$(NPM_CPU)
-npm-package: PKG_DIR := $(NPM_PACKAGES_DIR)/$(PKG_NAME)
 npm-package: build ## Create an npm package for the current binary
 	@printf "$(CYAN)Creating npm package for $(GOOS)/$(GOARCH) -> $(NPM_OS)/$(NPM_CPU)$(RESET)\n"
 	mkdir -p $(PKG_DIR)/bin
@@ -135,11 +136,27 @@ npm-package: build ## Create an npm package for the current binary
 	echo "$$package_json" > $(PKG_DIR)/package.json
 	@printf "$(GREEN)NPM package created in $(PKG_DIR)$(RESET)\n"
 
+.PHONY: npm-publish
+npm-publish: npm-package ## Publish the npm package for the current binary
+	cd $(PKG_DIR) && npm publish --access public
+
 .PHONY: npm-package-all
 npm-package-all: ## Create all npm packages for binaries
 	$(foreach GOOS,$(OSES),$(foreach GOARCH,$(ARCHS), \
 		$(MAKE) GOOS=$(GOOS) GOARCH=$(GOARCH) npm-package; \
 	))
+	sed -i 's/VERSION/$(VERSION)/g' $(NPM_DIR)/package.json
+	cd $(NPM_DIR) && npm i --package-lock-only
+
+.PHONY: npm-publish-all
+npm-publish-all: ## Publish all npm packages
+	$(foreach GOOS,$(OSES),$(foreach GOARCH,$(ARCHS), \
+		$(MAKE) GOOS=$(GOOS) GOARCH=$(GOARCH) npm-publish; \
+	))
+	sed -i 's/VERSION/$(VERSION)/g' $(NPM_DIR)/package.json
+	cd $(NPM_DIR) && \
+		npm i --package-lock-only && \
+		npm publish --access public
 
 define package_json
 {
