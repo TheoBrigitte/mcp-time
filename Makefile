@@ -135,6 +135,12 @@ npm-package: build ## Create an npm package for the current binary
 	chmod +x $(PKG_DIR)/bin/$(PROJECT_NAME)$(EXT)
 	echo "$$package_json" > $(PKG_DIR)/package.json
 	@printf "$(GREEN)NPM package created in $(PKG_DIR)$(RESET)\n"
+	sed -i 's/VERSION/$(VERSION)/g' $(NPM_DIR)/package.json $(NPM_DIR)/package-lock.json
+	cd $(NPM_DIR) && npm i --package-lock-only
+
+.PHONY: npm-run
+npm-run: npm-package ## Run the npm package for the current binary
+	cd $(NPM_DIR) && npm ci && npx . --version
 
 .PHONY: npm-publish
 npm-publish: npm-package ## Publish the npm package for the current binary
@@ -145,7 +151,7 @@ npm-package-all: ## Create all npm packages for binaries
 	$(foreach GOOS,$(OSES),$(foreach GOARCH,$(ARCHS), \
 		$(MAKE) GOOS=$(GOOS) GOARCH=$(GOARCH) npm-package; \
 	))
-	sed -i 's/VERSION/$(VERSION)/g' $(NPM_DIR)/package.json
+	sed -i 's/VERSION/$(VERSION)/g' $(NPM_DIR)/package.json $(NPM_DIR)/package-lock.json
 	cd $(NPM_DIR) && npm i --package-lock-only
 
 .PHONY: npm-publish-all
@@ -153,7 +159,7 @@ npm-publish-all: ## Publish all npm packages
 	$(foreach GOOS,$(OSES),$(foreach GOARCH,$(ARCHS), \
 		$(MAKE) GOOS=$(GOOS) GOARCH=$(GOARCH) npm-publish; \
 	))
-	sed -i 's/VERSION/$(VERSION)/g' $(NPM_DIR)/package.json
+	sed -i 's/VERSION/$(VERSION)/g' $(NPM_DIR)/package.json $(NPM_DIR)/package-lock.json
 	cd $(NPM_DIR) && \
 		npm i --package-lock-only && \
 		npm publish --access public
