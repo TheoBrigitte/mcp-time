@@ -30,11 +30,11 @@ The Time MCP Server is a [Model Context Protocol (MCP)](https://github.com/model
 
 ## Installation
 
-This MCP server can be integrated with various AI assistants that support the Model Context Protocol.
+This MCP server can be integrated with various AI assistants clients that support the Model Context Protocol, like [Cursor](https://cursor.com/), [Claude Code](https://www.claude.com/product/claude-code), and many [more](https://modelcontextprotocol.io/clients).
 
 ### On Cursor
 
-Use the link below to install directly in [Cursor](https://cursor.com).
+Using this link will automatically configure the MCP server in your [Cursor](https://cursor.com) environment and run it using Docker.
 
 <a href="cursor://anysphere.cursor-deeplink/mcp/install?name=time&config=eyJjb21tYW5kIjoiZG9ja2VyIiwiYXJncyI6WyJydW4iLCItLXJtIiwiLWkiLCJ0aGVvMDEvbWNwLXRpbWU6bGF0ZXN0Il19">
 <picture>
@@ -65,12 +65,13 @@ Using this method will run the MCP server using [`npx`](https://docs.npmjs.com/c
 
 ### Using Docker
 
-Copy the following JSON configuration into your MCP client to run the server using Docker:
+Use this method to run the MCP server using Docker. Make sure you have [Docker](https://www.docker.com/get-started/) installed on your system. Then copy the following JSON configuration into your MCP client to run the server:
 
 ```json
 {
   "mcpServers": {
-    "time": {
+    "mcp-time": {
+      "type": "stdio",
       "command": "docker",
       "args": [
         "run",
@@ -85,19 +86,18 @@ Copy the following JSON configuration into your MCP client to run the server usi
 
 ### Using binary
 
-Copy the following JSON configuration into your MCP client to run the server using the binary:
+Use this method to install the `mcp-time` binary on your system. You can do this in several ways, always make sure that the binary ends up in a directory which is in your `PATH`. Then copy the following JSON configuration into your MCP client to run the server using the binary:
 
 ```json
 {
   "mcpServers": {
-    "time": {
+    "mcp-time": {
+      "type": "stdio",
       "command": "mcp-time"
     }
   }
 }
 ```
-
-You need to install the `mcp-time` binary on your system. You can do this in several ways:
 
 #### Install from releases
 
@@ -111,6 +111,8 @@ install -D -m 755 ./mcp-time ~/.local/bin/mcp-time
 
 #### Install with Go
 
+Compile and install the binary using `go install`:
+
 ```bash
 go install github.com/TheoBrigitte/mcp-time/cmd/mcp-time@latest
 ```
@@ -118,6 +120,8 @@ go install github.com/TheoBrigitte/mcp-time/cmd/mcp-time@latest
 This will install the `mcp-time` binary in your `$GOPATH/bin` directory.
 
 #### Building from Source
+
+Clone the repository and build the binary using `make`:
 
 ```bash
 git clone https://github.com/TheoBrigitte/mcp-time.git
