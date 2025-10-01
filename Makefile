@@ -10,7 +10,7 @@ BUILD_USER ?= $(shell whoami)@$(shell hostname)
 GOARCH ?= $(shell go env GOARCH)
 GOOS ?= $(shell go env GOOS)
 PROJECT_NAME := mcp-time
-VERSION := $(shell git describe --always --long --dirty || date)
+VERSION := $(shell git describe --tags || date)
 
 # Default target
 .DEFAULT_GOAL := build
