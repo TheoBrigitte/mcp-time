@@ -15,6 +15,9 @@ jobs:
     - uses: actions/setup-go@v5
       with:
         go-version: stable
+    - uses: actions/setup-node@v4
+      with:
+        node-version: '20.x'
     - uses: golangci/golangci-lint-action@v6
     - name: go list
       run: go list -json -deps ./... > go.list
@@ -23,6 +26,10 @@ jobs:
         nancyCommand: sleuth --username ${{ vars.OSSI_USERNAME }} --token ${{ secrets.OSSI_TOKEN }}
     - run: make test
     - run: make build-all
+      env:
+        BUILD_USER: github-action
+    # Using a dummy version to build the npm package
+    - run: make VERSION=0.1.1 npm-package-all
       env:
         BUILD_USER: github-action
     - name: Docker meta
