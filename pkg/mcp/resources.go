@@ -75,12 +75,16 @@ func TimeFormatsResource(ctx context.Context, request mcp.ReadResourceRequest) (
 
 // CurrentTimeResource returns the current time in the specified timezone.
 func CurrentTimeResource(ctx context.Context, request mcp.ReadResourceRequest) ([]mcp.ResourceContents, error) {
-	// Extract timezone from URI path
-	parts := strings.Split(request.Params.URI, "/")
-	if len(parts) < 3 {
+	// Extract timezone from URI path (time://current/{timezone})
+	// The timezone may contain slashes (e.g., America/New_York)
+	prefix := "time://current/"
+	if !strings.HasPrefix(request.Params.URI, prefix) {
 		return nil, fmt.Errorf("invalid URI format: expected time://current/{timezone}")
 	}
-	timezone := parts[len(parts)-1]
+	timezone := request.Params.URI[len(prefix):]
+	if timezone == "" {
+		return nil, fmt.Errorf("invalid URI format: timezone is required")
+	}
 
 	// Get current time in the specified timezone with default format
 	currentTime, err := datetime.CurrentTime(timezone, "")
@@ -101,12 +105,16 @@ func CurrentTimeResource(ctx context.Context, request mcp.ReadResourceRequest) (
 
 // TimezoneInfoResource provides detailed information about a timezone.
 func TimezoneInfoResource(ctx context.Context, request mcp.ReadResourceRequest) ([]mcp.ResourceContents, error) {
-	// Extract timezone from URI path
-	parts := strings.Split(request.Params.URI, "/")
-	if len(parts) < 3 {
+	// Extract timezone from URI path (time://timezone-info/{timezone})
+	// The timezone may contain slashes (e.g., Asia/Tokyo)
+	prefix := "time://timezone-info/"
+	if !strings.HasPrefix(request.Params.URI, prefix) {
 		return nil, fmt.Errorf("invalid URI format: expected time://timezone-info/{timezone}")
 	}
-	timezone := parts[len(parts)-1]
+	timezone := request.Params.URI[len(prefix):]
+	if timezone == "" {
+		return nil, fmt.Errorf("invalid URI format: timezone is required")
+	}
 
 	// Get current time in various formats
 	currentTime, err := datetime.CurrentTime(timezone, "RFC3339")
