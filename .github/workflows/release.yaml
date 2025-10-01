@@ -13,6 +13,10 @@ jobs:
     - uses: actions/setup-go@v5
       with:
         go-version: stable
+    - uses: actions/setup-node@v4
+      with:
+        node-version: '20.x'
+        registry-url: 'https://registry.npmjs.org'
     - run: make build-all
       env:
         BUILD_USER: github-action
@@ -37,6 +41,9 @@ jobs:
         file: docker/Dockerfile
         context: .
         platforms: linux/amd64,linux/arm64
+    - run: make npm-publish-all
+      env:
+        NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
     - name: Generate Changelog
       id: generate_changelog
       uses: ffurrer2/extract-release-notes@v2
