@@ -5,7 +5,7 @@
 <div align="center">
 
 <a href="https://github.com/TheoBrigitte/mcp-time/releases"><img src="https://img.shields.io/github/release/TheoBrigitte/mcp-time.svg" alt="Github release"></a>
-<a href="https://github.com/TheoBrigitte/mcp-time/actions/workflows/go.yaml"><img src="https://github.com/TheoBrigitte/mcp-time/actions/workflows/go.yaml/badge.svg?branch=main" alt="Github action"></a>
+<a href="https://github.com/TheoBrigitte/mcp-time/actions/workflows/build.yaml"><img src="https://github.com/TheoBrigitte/mcp-time/actions/workflows/build.yaml/badge.svg?branch=main" alt="Github action"></a>
 <a href="https://pkg.go.dev/github.com/TheoBrigitte/mcp-time"><img src="https://pkg.go.dev/badge/github.com/TheoBrigitte/mcp-time.svg" alt="Go reference"></a>
 <a href="https://archestra.ai/mcp-catalog/theobrigitte__mcp-time"><img src="https://archestra.ai/mcp-catalog/api/badge/quality/TheoBrigitte/mcp-time" alt="Trust Score"></a>
 
@@ -43,6 +43,25 @@ Use the link below to install directly in [Cursor](https://cursor.com).
   <img alt="Add to Cursor" src="https://cursor.com/deeplink/mcp-install-light.svg" width="200">
 </picture>
 </a>
+
+### Using npx (JavaScript/Node.js)
+
+Using this method will run the MCP server using [`npx`](https://docs.npmjs.com/cli/v8/commands/npx), which requires Node.js to be installed on your system. Then copy the following JSON configuration into your MCP client to run the server:
+
+```json
+{
+  "mcpServers": {
+    "mcp-time": {
+      "type": "stdio",
+      "command": "npx",
+      "args": [
+        "-y",
+        "@theo.foobar/mcp-time"
+      ]
+    }
+  }
+}
+```
 
 ### Using Docker
 

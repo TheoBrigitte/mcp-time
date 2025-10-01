@@ -1,0 +1,38 @@
+{
+  "name": "@theo.foobar/mcp-time",
+  "version": "VERSION",
+  "description": "A mcp server providing standardized tools to perform time and date-related operations",
+  "keywords": [
+    "mcp",
+    "mcp-server",
+    "mcp-tools",
+    "modelcontextprotocol"
+  ],
+  "homepage": "https://github.com/TheoBrigitte/mcp-time#readme",
+  "bugs": {
+    "url": "https://github.com/TheoBrigitte/mcp-time/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/TheoBrigitte/mcp-time.git"
+  },
+  "license": "MIT",
+  "author": "Théo Brigitte <theo.brigitte@gmail.com>",
+  "type": "commonjs",
+  "main": "npm/index.js",
+  "bin": {
+    "mcp-time": "npm/bin/cli"
+  },
+  "scripts": {
+    "postinstall": "node ./npm/install.js"
+  },
+  "devDependencies": {},
+  "optionalDependencies": {
+    "mcp-time-darwin-arm64": "VERSION",
+    "mcp-time-darwin-x64": "VERSION",
+    "mcp-time-linux-arm64": "VERSION",
+    "mcp-time-linux-x64": "VERSION",
+    "mcp-time-windows-arm64": "VERSION",
+    "mcp-time-windows-x64": "VERSION"
+  }
+}

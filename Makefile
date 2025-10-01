@@ -1,19 +1,24 @@
 # This Makefile provides targets for building, linting and testing.
 
-# Variables
-PROJECT_NAME := mcp-time
-ROOT_DIR := $(shell pwd)
+# Directories
 BUILD_DIR := build
 DOCKER_FILE := docker/Dockerfile
+NPM_DIR := npm
 
 # Build informations
-VERSION := $(shell git describe --always --long --dirty || date)
+BUILD_USER ?= $(shell whoami)@$(shell hostname)
 GOARCH ?= $(shell go env GOARCH)
 GOOS ?= $(shell go env GOOS)
-BUILD_USER ?= $(shell whoami)@$(shell hostname)
+PROJECT_NAME := mcp-time
+VERSION := $(shell git describe --always --long --dirty || date)
 
 # Default target
 .DEFAULT_GOAL := build
+
+# Supported architectures and OSes
+ARCHS = amd64 arm64
+OSES = linux darwin windows
+EXT = $(if $(filter $(GOOS),windows),.exe,)
 
 # Colors for output
 CYAN := \033[36m
@@ -24,10 +29,13 @@ RESET := \033[0m
 
 ##@ Building
 
-define build
+GO_BIN := $(BUILD_DIR)/$(PROJECT_NAME).$(GOOS)-$(GOARCH)$(EXT)
+
+.PHONY: build
+build: ## Build the Go binary
 	@printf "$(CYAN)Building Go binary...$(RESET)\n"
 	mkdir -p $(BUILD_DIR)
-	GOOS=$(1) GOARCH=$(2) CGO_ENABLED=0 go build -v -o ./$(BUILD_DIR)/$(PROJECT_NAME).$(1)-$(2) -ldflags=" \
+	GOOS=$(GOOS) GOARCH=$(GOARCH) CGO_ENABLED=0 go build -v -o ./$(GO_BIN) -ldflags=" \
 	-s -w \
 	-X github.com/prometheus/common/version.Version=$(VERSION) \
 	-X github.com/prometheus/common/version.Revision=$(shell git rev-parse HEAD) \
@@ -35,45 +43,19 @@ define build
 	-X github.com/prometheus/common/version.BuildUser=$(BUILD_USER) \
 	-X github.com/prometheus/common/version.BuildDate=$(shell date --utc +%FT%T)" \
 	./cmd/$(PROJECT_NAME)
-	@printf "$(GREEN)Build completed. Output is in $(BUILD_DIR)/$(PROJECT_NAME).$(1)-$(2)$(RESET)\n"
-endef
-
-.PHONY: build
-build: ## Build the Go binary
-	$(call build,$(GOOS),$(GOARCH))
-
-.PHONY: build-linux-amd64
-build-linux-amd64: ## Build the Go binary for AMD64 architecture on linux
-	$(call build,linux,amd64)
-
-.PHONY: build-linux-arm64
-build-linux-arm64: ## Build the Go binary for ARM64 architecture on linux
-	$(call build,linux,arm64)
-
-.PHONY: build-darwin-amd64
-build-darwin-amd64: ## Build the Go binary for AMD64 architecture on darwin
-	$(call build,darwin,amd64)
-
-.PHONY: build-darwin-arm64
-build-darwin-arm64: ## Build the Go binary for ARM64 architecture on darwin
-	$(call build,darwin,arm64)
-
-.PHONY: build-windows-amd64
-build-windows-amd64: ## Build the Go binary for AMD64 architecture on windows
-	$(call build,windows,amd64)
-
-.PHONY: build-windows-arm64
-build-windows-arm64: ## Build the Go binary for ARM64 architecture on windows
-	$(call build,windows,arm64)
+	@printf "$(GREEN)Build completed. Output is in $(GO_BIN)\n"
 
 .PHONY: build-all
-build-all: build-linux-amd64 build-linux-arm64 build-darwin-amd64 build-darwin-arm64 build-windows-amd64 build-windows-arm64 # Build all supported architectures
+build-all: ## Build the Go binary for all supported OSes and architectures
+	$(foreach GOOS,$(OSES),$(foreach GOARCH,$(ARCHS), \
+		$(MAKE) GOOS=$(GOOS) GOARCH=$(GOARCH) build; \
+	))
 
 .PHONY: install
 install: build ## Install the binary to ~/.local/bin
 	@printf "$(CYAN)Installing binary to ~/.local/bin...$(RESET)\n"
 	@mkdir -p ~/.local/bin
-	cp $(BUILD_DIR)/$(PROJECT_NAME).$(GOOS)-$(GOARCH) ~/.local/bin/$(PROJECT_NAME)
+	cp $(GO_BIN) ~/.local/bin/$(PROJECT_NAME)
 	chmod +x ~/.local/bin/$(PROJECT_NAME)
 	@printf "$(GREEN)Binary installed to ~/.local/bin/$(PROJECT_NAME)$(RESET)\n"
 
@@ -93,6 +75,8 @@ docker-all: build-all ## Build the Docker image for all architectures
 clean: ## Clean build artifacts and Docker images
 	@printf "$(CYAN)Cleaning build artifacts...$(RESET)\n"
 	rm -rf $(BUILD_DIR)
+	rm -rf $(NPM_DIR)/packages
+	rm -rf $(NPM_DIR)/node_modules
 	@printf "$(CYAN)Removing Docker images...$(RESET)\n"
 	@docker rmi -f $(PROJECT_NAME) 2>/dev/null || true
 	@printf "$(GREEN)Cleanup completed$(RESET)\n"
@@ -137,11 +121,62 @@ nancy: ## Run Nancy vulnerability scan
 .PHONY: security
 security: nancy ## Run all security scans
 
+##@ NPM Publishing
+
+NPM_CPU := $(if $(filter $(GOARCH),amd64),x64,$(GOARCH))
+NPM_OS := $(GOOS)
+PKG_NAME := $(PROJECT_NAME)-$(NPM_OS)-$(NPM_CPU)
+PKG_DIR := $(NPM_DIR)/packages/$(PKG_NAME)
+
+.PHONY: npm-package
+npm-package: build ## Create an npm package for the current binary
+	@printf "$(CYAN)Creating npm package for $(GOOS)/$(GOARCH) -> $(NPM_OS)/$(NPM_CPU)$(RESET)\n"
+	mkdir -p $(PKG_DIR)/bin
+	cp $(GO_BIN) $(PKG_DIR)/bin/$(PROJECT_NAME)$(EXT)
+	chmod +x $(PKG_DIR)/bin/$(PROJECT_NAME)$(EXT)
+	echo "$$package_json" > $(PKG_DIR)/package.json
+	@printf "$(GREEN)NPM package created in $(PKG_DIR)$(RESET)\n"
+
+.PHONY: npm-run
+npm-run: npm-package-all ## Run the npm package for the current binary
+	npm ci && npx . --version
+
+.PHONY: npm-publish
+npm-publish: npm-package ## Publish the npm package for the current binary
+	cd $(PKG_DIR) && npm publish --access public
+
+.PHONY: npm-package-all
+npm-package-all: ## Create all npm packages for binaries
+	$(foreach GOOS,$(OSES),$(foreach GOARCH,$(ARCHS), \
+		$(MAKE) GOOS=$(GOOS) GOARCH=$(GOARCH) npm-package; \
+	))
+	sed -i 's/VERSION/$(VERSION)/g' package.json package-lock.json
+	npm install
+
+.PHONY: npm-publish-all
+npm-publish-all: ## Publish all npm packages
+	$(foreach GOOS,$(OSES),$(foreach GOARCH,$(ARCHS), \
+		$(MAKE) GOOS=$(GOOS) GOARCH=$(GOARCH) npm-publish; \
+	))
+	sed -i 's/VERSION/$(VERSION)/g' package.json package-lock.json
+	npm install && npm publish --access public
+
+define package_json
+{
+  "name": "$(PKG_NAME)",
+  "version": "$(VERSION)",
+  "description": "Binary for $(PROJECT_NAME) on $(NPM_OS) $(NPM_CPU)",
+  "os": ["$(NPM_OS)"],
+  "cpu": ["$(NPM_CPU)"]
+}
+endef
+export package_json
+
 ##@ Help
 
 .PHONY: help
 help: ## Display this help message
-	@awk 'BEGIN {FS = ":.*##"; printf "\n$(CYAN)Usage:$(RESET)\n  make $(YELLOW)<target>$(RESET)\n"} /^[a-zA-Z_0-9-]+:.*?##/ { printf "  $(YELLOW)%-20s$(RESET) %s\n", $$1, $$2 } /^##@/ { printf "\n$(CYAN)%s$(RESET)\n", substr($$0, 5) } ' $(MAKEFILE_LIST)
+	@awk 'BEGIN {FS = ":.*##"; printf "\n$(CYAN)Usage:$(RESET)\n  make $(YELLOW)<target>$(RESET)\n"} /^[a-zA-Z_0-9-]+.*?##/ { printf "  $(YELLOW)%-20s$(RESET) %s\n", $$1, $$2 } /^##@/ { printf "\n$(CYAN)%s$(RESET)\n", substr($$0, 5) } ' $(MAKEFILE_LIST)
 	@printf "\n"
 	@printf "$(CYAN)Examples:$(RESET)\n"
 	@printf "  make install                        # Install to ~/.local/bin\n"
