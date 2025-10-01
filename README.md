@@ -5,7 +5,7 @@
 <div align="center">
 
 <a href="https://github.com/TheoBrigitte/mcp-time/releases"><img src="https://img.shields.io/github/release/TheoBrigitte/mcp-time.svg" alt="Github release"></a>
-<a href="https://github.com/TheoBrigitte/mcp-time/actions/workflows/go.yaml"><img src="https://github.com/TheoBrigitte/mcp-time/actions/workflows/go.yaml/badge.svg?branch=main" alt="Github action"></a>
+<a href="https://github.com/TheoBrigitte/mcp-time/actions/workflows/build.yaml"><img src="https://github.com/TheoBrigitte/mcp-time/actions/workflows/build.yaml/badge.svg?branch=main" alt="Github action"></a>
 <a href="https://pkg.go.dev/github.com/TheoBrigitte/mcp-time"><img src="https://pkg.go.dev/badge/github.com/TheoBrigitte/mcp-time.svg" alt="Go reference"></a>
 <a href="https://archestra.ai/mcp-catalog/theobrigitte__mcp-time"><img src="https://archestra.ai/mcp-catalog/api/badge/quality/TheoBrigitte/mcp-time" alt="Trust Score"></a>
 
