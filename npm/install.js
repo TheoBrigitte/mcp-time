@@ -12,7 +12,7 @@ const BINARY_DISTRIBUTION_PACKAGES = {
   'linux-arm64': `${PROJECT_NAME}-linux-arm64`,
   'darwin-x64': `${PROJECT_NAME}-darwin-x64`,
   'darwin-arm64': `${PROJECT_NAME}-darwin-arm64`,
-  'win32-x64': `${PROJECT_NAME}-win32-x64`,
+  'windows-x64': `${PROJECT_NAME}-windows-x64`,
 }
 
 // Windows binaries end with .exe so we need to special case them.
