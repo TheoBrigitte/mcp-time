@@ -44,6 +44,25 @@ Use the link below to install directly in [Cursor](https://cursor.com).
 </picture>
 </a>
 
+### Using npx (JavaScript/Node.js)
+
+Using this method will run the MCP server using [`npx`](https://docs.npmjs.com/cli/v8/commands/npx), which requires Node.js to be installed on your system. Then copy the following JSON configuration into your MCP client to run the server:
+
+```json
+{
+  "mcpServers": {
+    "mcp-time": {
+      "type": "stdio",
+      "command": "npx",
+      "args": [
+        "-y",
+        "@theo.foobar/mcp-time"
+      ]
+    }
+  }
+}
+```
+
 ### Using Docker
 
 Copy the following JSON configuration into your MCP client to run the server using Docker:
