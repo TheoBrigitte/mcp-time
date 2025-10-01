@@ -76,8 +76,10 @@ func RelativeTime(ctx context.Context, request mcp.CallToolRequest) (r *mcp.Call
 func CompareTime(ctx context.Context, request mcp.CallToolRequest) (r *mcp.CallToolResult, err error) {
 	timeA := request.GetString("time_a", "")
 	timeB := request.GetString("time_b", "")
+	timeATimezone := request.GetString("time_a_timezone", "")
+	timeBTimezone := request.GetString("time_b_timezone", "")
 
-	result, err := datetime.CompareTime(timeA, timeB)
+	result, err := datetime.CompareTime(timeA, timeB, timeATimezone, timeBTimezone)
 	if err != nil {
 		return mcp.NewToolResultError(err.Error()), nil
 	}

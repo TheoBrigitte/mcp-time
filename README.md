@@ -216,16 +216,20 @@ Add or subtract a duration from a given time.
 
 ### `compare_time`
 
-Compare two times and determine their relationship.
+Compare two times and determine their relationship. Supports timezone-aware comparisons.
 
 **Parameters:**
 - `time_a` (required) - First time to compare
+- `time_a_timezone` (optional) - Timezone for `time_a` in IANA format (e.g., `America/New_York`)
 - `time_b` (required) - Second time to compare
+- `time_b_timezone` (optional) - Timezone for `time_b` in IANA format (e.g., `Europe/London`)
 
 **Returns:**
 - `-1` if `time_a` is before `time_b`
 - `0` if `time_a` equals `time_b`
 - `1` if `time_a` is after `time_b`
+
+**Example:** "Is 3 PM EST before 8 PM GMT?"
 
 ## Contributing
 
