@@ -4,11 +4,11 @@
 
 <div align="center">
 
-[![GitHub release](https://img.shields.io/github/release/TheoBrigitte/mcp-time.svg)](https://github.com/TheoBrigitte/mcp-time/releases)
+[![GitHub release](https://img.shields.io/github/release/TheoBrigitte/mcp-time.svg?color)](https://github.com/TheoBrigitte/mcp-time/releases)
 [![Build Status](https://github.com/TheoBrigitte/mcp-time/actions/workflows/build.yaml/badge.svg?branch=main)](https://github.com/TheoBrigitte/mcp-time/actions/workflows/build.yaml)
 [![Go Reference](https://pkg.go.dev/badge/github.com/TheoBrigitte/mcp-time.svg)](https://pkg.go.dev/github.com/TheoBrigitte/mcp-time)
 [![Trust Score](https://archestra.ai/mcp-catalog/api/badge/quality/TheoBrigitte/mcp-time)](https://archestra.ai/mcp-catalog/theobrigitte__mcp-time)
-[![NPM Package](https://img.shields.io/npm/v/@theo.foobar/mcp-time)](https://www.npmjs.com/package/@theo.foobar/mcp-time)
+[![NPM Package](https://img.shields.io/npm/v/@theo.foobar/mcp-time?color)](https://www.npmjs.com/package/@theo.foobar/mcp-time)
 [![Docker Image](https://img.shields.io/docker/v/theo01/mcp-time?label=docker)](https://hub.docker.com/r/theo01/mcp-time)
 
 <strong>Time MCP Server</strong>
