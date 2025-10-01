@@ -76,6 +76,7 @@ clean: ## Clean build artifacts and Docker images
 	@printf "$(CYAN)Cleaning build artifacts...$(RESET)\n"
 	rm -rf $(BUILD_DIR)
 	rm -rf $(NPM_DIR)/packages
+	rm -rf $(NPM_DIR)/node_modules
 	@printf "$(CYAN)Removing Docker images...$(RESET)\n"
 	@docker rmi -f $(PROJECT_NAME) 2>/dev/null || true
 	@printf "$(GREEN)Cleanup completed$(RESET)\n"
@@ -138,7 +139,7 @@ npm-package: build ## Create an npm package for the current binary
 
 .PHONY: npm-run
 npm-run: npm-package-all ## Run the npm package for the current binary
-	cd $(NPM_DIR) && npm ci && npx . --version
+	npm ci && npx . --version
 
 .PHONY: npm-publish
 npm-publish: npm-package ## Publish the npm package for the current binary
@@ -149,20 +150,16 @@ npm-package-all: ## Create all npm packages for binaries
 	$(foreach GOOS,$(OSES),$(foreach GOARCH,$(ARCHS), \
 		$(MAKE) GOOS=$(GOOS) GOARCH=$(GOARCH) npm-package; \
 	))
-	git checkout -- $(NPM_DIR)/package.json $(NPM_DIR)/package-lock.json
-	sed -i 's/VERSION/$(VERSION)/g' $(NPM_DIR)/package.json $(NPM_DIR)/package-lock.json
-	cd $(NPM_DIR) && npm install
+	sed -i 's/VERSION/$(VERSION)/g' package.json package-lock.json
+	npm install
 
 .PHONY: npm-publish-all
 npm-publish-all: ## Publish all npm packages
 	$(foreach GOOS,$(OSES),$(foreach GOARCH,$(ARCHS), \
 		$(MAKE) GOOS=$(GOOS) GOARCH=$(GOARCH) npm-publish; \
 	))
-	git checkout -- $(NPM_DIR)/package.json $(NPM_DIR)/package-lock.json
-	sed -i 's/VERSION/$(VERSION)/g' $(NPM_DIR)/package.json $(NPM_DIR)/package-lock.json
-	cd $(NPM_DIR) && \
-		npm install && \
-		npm publish --access public
+	sed -i 's/VERSION/$(VERSION)/g' package.json package-lock.json
+	npm install && npm publish --access public
 
 define package_json
 {

@@ -19,12 +19,12 @@
   "license": "MIT",
   "author": "Théo Brigitte <theo.brigitte@gmail.com>",
   "type": "commonjs",
-  "main": "index.js",
+  "main": "npm/index.js",
   "bin": {
-    "mcp-time": "bin/cli"
+    "mcp-time": "npm/bin/cli"
   },
   "scripts": {
-    "postinstall": "node ./install.js"
+    "postinstall": "node ./npm/install.js"
   },
   "devDependencies": {},
   "optionalDependencies": {
