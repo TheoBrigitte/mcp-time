@@ -87,13 +87,23 @@ Examples:
 // compareDescription explains the output of the compare_time tool.
 const compareDescription = `Compares two times. Returns -1 if the first time is before the second, 0 if they are equal, and 1 if the first time is after the second.`
 
-// RegisterHandlers registers the time and date MCP tools with the provided MCP server.
+// RegisterHandlers registers the time and date MCP tools, prompts, and resources with the provided MCP server.
 //
 // Parameters:
-//   - s: The MCP server instance to register tools with.
+//   - s: The MCP server instance to register tools, prompts, and resources with.
 //
 // Returns an error if tool registration fails (though current implementation always returns nil).
 func RegisterHandlers(s *server.MCPServer) {
+	// Register prompts
+	RegisterPrompts(s)
+
+	// Register resources
+	RegisterResources(s)
+
+	// Enable sampling (already configured in server capabilities, but explicitly enable)
+	EnableSampling(s)
+
+	// Register tools
 	currentTime := mcp.NewTool("current_time",
 		mcp.WithDescription("Returns the current time."),
 		mcp.WithString("format",

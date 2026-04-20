@@ -47,9 +47,17 @@ func NewServer(name, version string) *Server {
 		name,
 		version,
 		server.WithToolCapabilities(true),
+		server.WithPromptCapabilities(true),
+		server.WithResourceCapabilities(true, false), // resources enabled, subscriptions disabled
 	)
 
 	RegisterHandlers(mcpServer)
+
+	// Register filesystem roots
+	err := RegisterRoots(mcpServer)
+	if err != nil {
+		log.Printf("Warning: failed to register roots: %v", err)
+	}
 
 	s := &Server{
 		mcpServer,

@@ -7,6 +7,21 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- Add MCP prompts support with 3 interactive prompt templates:
+  - `time_format_helper` - Get help with time format strings (predefined/custom)
+  - `timezone_conversion_guide` - Guidance on timezone conversions
+  - `relative_time_examples` - Natural language time expression examples
+- Add MCP resources support with 5 resources:
+  - `time://formats` - List of available time formats
+  - `time://current/{timezone}` - Current time in any timezone (template)
+  - `time://timezone-info/{timezone}` - Detailed timezone information (template)
+  - `time://timezones/popular` - Popular timezones reference
+  - `time://guide/relative-expressions` - Comprehensive relative time guide
+- Add MCP sampling support to enable server-initiated LLM requests
+- Add MCP roots support declaring filesystem locations (home, working dir, timezone database)
+
 ## [0.4.0] - 2025-10-01
 
 ### Added
